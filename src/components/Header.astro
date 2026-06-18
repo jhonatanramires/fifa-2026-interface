@@ -1,0 +1,38 @@
+---
+const cartCount = 0
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <!-- <button class="icon-btn" type="button" aria-label="Abrir menú">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <button class="icon-btn" type="button" aria-label="Buscar">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button> -->
+    </div>
+
+    <a class="logo" href="/" aria-label="Panini inicio">
+      <img src="/panini-logo.png" alt="Panini" />
+    </a>
+
+    <div class="cart">
+      <button class="icon-btn" type="button" aria-label="Ver carrito">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+      </button>
+      <span class="cart-count" aria-label={`${cartCount} artículos en el carrito`}>{cartCount}</span>
+    </div>
+  </div>
+</header>

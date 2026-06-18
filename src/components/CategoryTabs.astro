@@ -1,0 +1,56 @@
+---
+interface Props {
+  categories: string[]
+  active: string
+}
+const { categories, active } = Astro.props
+---
+
+<nav class="tabs" aria-label="Categorías de productos">
+  <div class="tabs-inner" role="tablist">
+    {
+      categories.map((cat) => (
+        <button
+          class="tab"
+          role="tab"
+          type="button"
+          aria-selected={cat === active ? "true" : "false"}
+          data-category={cat}
+        >
+          {cat}
+        </button>
+      ))
+    }
+  </div>
+</nav>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>(".tab")
+  const cards = document.querySelectorAll<HTMLElement>("[data-product-categories]")
+  const emptyMsg = document.querySelector<HTMLElement>("[data-empty-category]")
+
+  function applyFilter(category: string) {
+    let visible = 0
+    cards.forEach((card) => {
+      const categoriesString = card.dataset.productCategories ?? ""
+      const productCategories = categoriesString.split('|').filter(Boolean)
+      var match = productCategories.includes(category)
+      card.style.display = match ? "" : "none"
+      
+      if (match) visible++
+    })
+    if (emptyMsg) emptyMsg.hidden = visible > 0
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => t.setAttribute("aria-selected", "false"))
+      tab.setAttribute("aria-selected", "true")
+      applyFilter(tab.dataset.category ?? "")
+    })
+  })
+
+  // Apply the initially selected category on load.
+  const initial = document.querySelector<HTMLButtonElement>('.tab[aria-selected="true"]')
+  if (initial) applyFilter(initial.dataset.category ?? "")
+</script>

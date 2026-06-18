@@ -1,0 +1,77 @@
+---
+import { getCollection } from "astro:content"
+import Layout from "../layouts/Layout.astro"
+import CategoryTabs from "../components/CategoryTabs.astro"
+import ProductCard from "../components/ProductCard.astro"
+
+const DEFAULT_CATEGORIES = [
+  "MUNDIAL",
+  "ÚLTIMOS LANZAMIENTOS",
+]
+
+let productos: any[] = []
+let loadError: string | null = null
+
+try {
+  const entries = await getCollection("productos")
+  productos = entries.map((e) => e.data)
+} catch (err) {
+  loadError = err instanceof Error ? err.message : "No se pudieron cargar los productos."
+}
+
+// Always show the default tabs (to match the Panini layout), then append any
+// extra categories found in the sheet that aren't already covered.
+
+const sheetCategories = Array.from(
+  new Set(
+    productos
+      .flatMap((p) => {
+        console.log(p)
+        return p.categorias ?? []
+      }) // Aplana todas las categorías en un solo array
+      .map((cat) => cat.trim())          // Limpia cada categoría
+      .filter(Boolean)                   // Filtra vacíos
+  )
+);
+
+console.log(sheetCategories)
+
+const categories = (Array.from(
+  new Set([...DEFAULT_CATEGORIES, ...sheetCategories]),
+)).sort()
+const activeCategory = categories[0]
+---
+
+<Layout>
+  <CategoryTabs categories={categories} active={activeCategory} />
+
+  <main class="container">
+    {
+      loadError ? (
+        <p class="empty">
+          No se pudieron cargar los productos desde Google Sheets. Verifica el
+          ID del documento en <code>src/content.config.ts</code> y que la hoja
+          sea pública.
+        </p>
+      ) : productos.length === 0 ? (
+        <p class="empty">Aún no hay productos en la hoja de cálculo.</p>
+      ) : (
+        <div class="grid">
+          {productos.map((p) => (
+            <ProductCard
+              nombre={p.nombre}
+              precio={p.precio}
+              descripcion={p.descripcion}
+              imagen={p.imagen}
+              categorias={p.categorias ?? []}
+              despacho={p.despacho}
+            />
+          ))}
+        </div>
+        <p class="empty" data-empty-category hidden>
+          No hay productos en esta categoría.
+        </p>
+      )
+    }
+  </main>
+</Layout>
