@@ -7,9 +7,11 @@ interface Props {
   imagen?: string | null
   categorias?: string[]
   despacho?: string | null
+  whatsapp: string
+  mensaje: string | null
 }
 
-const { nombre, precio, descripcion, imagen, categorias, despacho } = Astro.props
+const { nombre, precio, descripcion, imagen, categorias, despacho, whatsapp, mensaje } = Astro.props
 
 const precioFmt =
   precio != null
@@ -30,7 +32,7 @@ function generarLinkWhatsApp(numero: string, texto: string): string {
   return `https://wa.me/${numeroLimpio}?text=${textoCodificado}`;
 }
 
-const href = generarLinkWhatsApp("+57 320 7805407", `Me interesa comprar ${nombre}`)
+const href = generarLinkWhatsApp(whatsapp, `${mensaje} ${nombre}`)
 
 ---
 

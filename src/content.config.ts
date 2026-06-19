@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content"
 import { productosSheetLoader } from "./lib/productos-loader"
+import { configSheetLoader } from "./lib/config-loader"
 
 // Replace this with your own Google Sheet document ID.
 // The sheet must be shared as "Anyone on the internet with the link can view".
@@ -12,6 +13,13 @@ const SHEET_DOCUMENT_ID =
 //
 // The loader normalizes those headers to the clean keys below. Optional columns
 // "Categoria" and "Despacho" are also supported if you add them to the sheet.
+
+const SHEET_DOCUMENT_ID_C =
+  import.meta.env.GOOGLE_SHEET_ID_C ?? "1-cLfOK4Imck4yJDVm4TkhDKJOTs7ZT6PKENkOoYupRM"
+
+// Columns in the connected Google Sheet Configs (header row):
+//   whatsapp | mensaje 
+
 const productos = defineCollection({
   loader: productosSheetLoader({
     document: SHEET_DOCUMENT_ID,
@@ -27,4 +35,15 @@ const productos = defineCollection({
   }),
 })
 
-export const collections = { productos }
+const configuraciones = defineCollection({
+  loader: configSheetLoader({
+    document: SHEET_DOCUMENT_ID_C,
+    allowBlanks: true
+  }),
+  schema: z.object({
+    whatsapp: z.string(),
+    mensaje: z.string()
+  })
+})
+
+export const collections = { productos, configuraciones }
