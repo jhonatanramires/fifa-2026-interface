@@ -1,12 +1,21 @@
 :root {
-  --panini-blue: #0050b3;
+  /* Naranja vibrante del header */
+  --panini-blue: #ec6607f5; 
+  
+  /* Azul corporativo oscuro del sello y detalles del logo */
+  --panini-blue-dark: #003865; 
+  
+  /* Rojo clásico de la marca Panini */
+  --panini-red: #E2231A; 
+  /* --panini-blue: #0050b3;
   --panini-blue-dark: #003e8f;
-  --panini-red: #e2231a;
+  --panini-red: #e2231a; */
   --bg: #f1f2f4;
   --card: #ffffff;
   --text: #1a1a1a;
   --text-muted: #6b7280;
   --border: #e5e7eb;
+  --header-img-h: 50px;
   --header-h: 88px;
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -91,14 +100,22 @@ img {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.logo-distri img {
+  height: calc(var(--header-img-h) + 6px);
+  width: auto;
+}
+
 .logo {
   display: inline-flex;
   align-items: center;
 }
 
 .logo img {
-  height: 52px;
+  height: var(--header-img-h);
   width: auto;
+  /* border: 5px solid #333;
+  border-radius: 5%;
+  object-fit: cover; */
 }
 
 .cart {
