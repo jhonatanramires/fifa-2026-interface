@@ -3,6 +3,7 @@ import { getCollection } from "astro:content"
 import Layout from "../layouts/Layout.astro"
 import CategoryTabs from "../components/CategoryTabs.astro"
 import ProductCard from "../components/ProductCard.astro"
+import type { Config } from "../lib/config-loader"
 
 const DEFAULT_CATEGORIES = [
   "MUNDIAL",
@@ -10,9 +11,15 @@ const DEFAULT_CATEGORIES = [
 ]
 
 let productos: any[] = []
+let configs: Config = {} as Config
 let loadError: string | null = null
-const config = await getCollection("configuraciones")
-console.log(config)
+try {
+  const config = await getCollection("configuraciones")
+  configs = config[0]?.data as Config
+} catch (err) {
+  loadError = err instanceof Error ? err.message : "No se pudieron cargar las configuraciones."
+}
+console.log("Configs cargadas:", configs)
 try {
   const entries = await getCollection("productos")
   productos = entries.map((e) => e.data)
@@ -27,7 +34,6 @@ const sheetCategories = Array.from(
   new Set(
     productos
       .flatMap((p) => {
-        console.log(p)
         return p.categorias ?? []
       }) // Aplana todas las categorías en un solo array
       .map((cat) => cat.trim())          // Limpia cada categoría
@@ -35,15 +41,13 @@ const sheetCategories = Array.from(
   )
 );
 
-console.log(sheetCategories)
-
 const categories = (Array.from(
   new Set([...DEFAULT_CATEGORIES, ...sheetCategories]),
 )).sort()
 const activeCategory = categories[0]
 ---
 
-<Layout>
+<Layout configs={configs}>
   <CategoryTabs categories={categories} active={activeCategory} />
 
   <main class="container">
@@ -66,8 +70,8 @@ const activeCategory = categories[0]
               imagen={p.imagen}
               categorias={p.categorias ?? []}
               despacho={p.despacho}
-              whatsapp="3243214"
-              mensaje="sdakfñasl"
+              whatsapp={configs.WHATSAPP}
+              mensaje={configs.MENSAJE}
             />
           ))}
         </div>
