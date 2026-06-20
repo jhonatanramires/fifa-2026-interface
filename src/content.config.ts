@@ -18,7 +18,7 @@ const SHEET_DOCUMENT_ID_C =
   import.meta.env.GOOGLE_SHEET_ID_C ?? "1-cLfOK4Imck4yJDVm4TkhDKJOTs7ZT6PKENkOoYupRM"
 
 // Columns in the connected Google Sheet Configs (header row):
-//   whatsapp | mensaje 
+//   WHATSAPP | MENSAJE | EMAIL | FACEBOOK | INSTAGRAM | YOUTUBE | TWITTER | TIKTOK
 
 const productos = defineCollection({
   loader: productosSheetLoader({
@@ -41,8 +41,15 @@ const configuraciones = defineCollection({
     allowBlanks: true
   }),
   schema: z.object({
-    whatsapp: z.string(),
-    mensaje: z.string()
+    WHATSAPP: z.string(),
+    MENSAJE: z.string(),
+    EMAIL: z.string().nullable().optional(),
+    DIR: z.string().nullable().optional(),
+    FACEBOOK: z.string().nullable().optional(),
+    INSTAGRAM: z.string().nullable().optional(),
+    YOUTUBE: z.string().nullable().optional(),
+    TWITTER: z.string().nullable().optional(),
+    TIKTOK: z.string().nullable().optional(),
   })
 })
 
