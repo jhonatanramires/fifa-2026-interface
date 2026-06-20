@@ -1,0 +1,25 @@
+---
+import { getCollection } from "astro:content"
+import Layout from "../layouts/Layout.astro"
+import type { Config } from "../lib/config-loader"
+
+let configs: Config = {} as Config
+let loadError: string | null = null
+try {
+  const config = await getCollection("configuraciones")
+  configs = config[0]?.data as Config
+} catch (err) {
+  loadError = err instanceof Error ? err.message : "No se pudieron cargar las configuraciones."
+}
+---
+<Layout configs={configs}>
+  <main class="container">
+    <h1>Acerca de Nosotros</h1>
+    <p>
+      Somos una tienda especializada en la venta de productos oficiales de la FIFA para el Mundial 2026. Nuestro objetivo es ofrecer a los fanáticos del fútbol la mejor experiencia de compra, con productos de alta calidad y un servicio excepcional.
+    </p>
+    <p>
+      En nuestra tienda encontrarás una amplia variedad de productos, desde camisetas oficiales hasta accesorios exclusivos. Nos enorgullece ser parte de esta celebración global del fútbol y esperamos poder compartir esta pasión con todos nuestros clientes.
+    </p>
+  </main>
+</Layout>
