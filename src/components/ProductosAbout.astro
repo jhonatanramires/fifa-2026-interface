@@ -1,0 +1,203 @@
+---
+// ProductosAbout.astro – Catálogo de productos en la página About
+const productos = [
+  {
+    emoji: "📘",
+    nombre: "Álbum Panini FIFA 2026 Azul",
+    desc: "El álbum oficial pasta dura azul del Mundial 2026. Resistente, elegante, el compañero ideal para tu colección.",
+    tag: "Más vendido",
+    tagColor: "blue",
+  },
+  {
+    emoji: "🏆",
+    nombre: "Álbum Panini FIFA 2026 Gold",
+    desc: "Edición especial dorada de lujo. Pasta dura premium con acabado metálico, para los coleccionistas más exigentes.",
+    tag: "Edición Especial",
+    tagColor: "gold",
+  },
+  {
+    emoji: "✉️",
+    nombre: "Sobres Panini FIFA 2026",
+    desc: "Cada sobre trae 5 figuritas oficiales. ¡Ábrelos y vive la emoción de encontrar tu figurita favorita!",
+    tag: "",
+    tagColor: "",
+  },
+  {
+    emoji: "📦",
+    nombre: "Cajas Panini Mundial 2026",
+    desc: "Cajas con 100 sobres oficiales para completar tu álbum más rápido. Ideales para regalo o intercambio.",
+    tag: "Oferta",
+    tagColor: "red",
+  },
+  {
+    emoji: "🗃️",
+    nombre: "Displays Panini FIFA 2026",
+    desc: "Displays completos de 50 sobres. La opción preferida por coleccionistas y grupos de intercambio.",
+    tag: "",
+    tagColor: "",
+  },
+]
+---
+
+<section class="productos-about">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-eyebrow">Lo que encontrarás</span>
+      <h2 class="section-title">Productos disponibles</h2>
+      <p class="section-subtitle">Todo lo que necesitas para completar tu colección oficial del Mundial 2026</p>
+    </div>
+
+    <ul class="productos-list" role="list">
+      {productos.map((p) => (
+        <li class="producto-item">
+          <div class="producto-icon" aria-hidden="true">{p.emoji}</div>
+          <div class="producto-info">
+            <div class="producto-header">
+              <span class="producto-nombre">{p.nombre}</span>
+              {p.tag && (
+                <span class={`producto-tag tag-${p.tagColor}`}>{p.tag}</span>
+              )}
+            </div>
+            <p class="producto-desc">{p.desc}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .productos-about {
+    background: var(--bg);
+    padding: 4rem 0;
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .section-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--panini-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.15;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+    max-width: 480px;
+  }
+
+  .productos-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .producto-item {
+    background: var(--card);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    border-left: 4px solid var(--panini-blue);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .producto-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  }
+
+  .producto-icon {
+    font-size: 1.75rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .producto-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .producto-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.35rem;
+  }
+
+  .producto-nombre {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .producto-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+  }
+
+  .tag-blue {
+    background: rgba(236,102,7,0.12);
+    color: var(--panini-blue);
+  }
+
+  .tag-gold {
+    background: rgba(255,206,0,0.18);
+    color: #7a5c00;
+  }
+
+  .tag-red {
+    background: rgba(226,35,26,0.10);
+    color: var(--panini-red);
+  }
+
+  .producto-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  @media (max-width: 480px) {
+    .producto-item {
+      padding: 1rem;
+    }
+    .producto-icon {
+      font-size: 1.4rem;
+    }
+  }
+</style>

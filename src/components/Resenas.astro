@@ -1,0 +1,273 @@
+---
+// Resenas.astro – Sección de reseñas de clientes
+const resenas = [
+  {
+    nombre: "Andrés Mejía",
+    ciudad: "Medellín",
+    avatarLetra: "A",
+    avatarColor: "#ec6607f5",
+    estrellas: 5,
+    fecha: "Junio 2025",
+    texto: "Pedí una caja Panini y llegó al día siguiente perfectamente empacada. Los sobres son completamente originales, se nota la diferencia con otras tiendas. Ya voy por mi segunda caja 🔥",
+  },
+  {
+    nombre: "Valentina Torres",
+    ciudad: "Bogotá",
+    avatarLetra: "V",
+    avatarColor: "#003865",
+    estrellas: 3,
+    fecha: "Mayo 2025",
+    texto: "Compré el álbum Gold edición especial para mi esposo y quedó feliz. El envío fue rapidísimo desde Medellín y la atención para resolver mis dudas fue excelente. Muy recomendados.",
+  },
+  {
+    nombre: "Santiago López",
+    ciudad: "Cali",
+    avatarLetra: "S",
+    avatarColor: "#E2231A",
+    estrellas: 4.5,
+    fecha: "Junio 2025",
+    texto: "Llevo años coleccionando álbumes Panini y esta es definitivamente la mejor tienda online que he encontrado en Colombia. Precios justos, producto original y despachan rápido. ¡10/10!",
+  },
+  {
+    nombre: "Camila Restrepo",
+    ciudad: "Medellín",
+    avatarLetra: "C",
+    avatarColor: "#1a6b3a",
+    estrellas: 4.7,
+    fecha: "Abril 2025",
+    texto: "Le regalé un display a mi hijo para su cumpleaños y fue el mejor regalo que le he dado. La tienda me ayudó a elegir qué comprar según su álbum. Un servicio muy humano y cercano.",
+  },
+  {
+    nombre: "Felipe Cardona",
+    ciudad: "Manizales",
+    avatarLetra: "F",
+    avatarColor: "#7c3aed",
+    estrellas: 3,
+    fecha: "Mayo 2025",
+    texto: "Me sorprendió lo fácil que fue hacer el pedido y lo rápido que llegó a Manizales. El empaque protegía muy bien los sobres. Sin duda vuelvo a comprar cuando salga la próxima colección.",
+  },
+  {
+    nombre: "Laura Ospina",
+    ciudad: "Pereira",
+    avatarLetra: "L",
+    avatarColor: "#0891b2",
+    estrellas: 3,
+    fecha: "Junio 2025",
+    texto: "Excelente tienda. Compré el álbum azul y los sobres y me llegaron en perfecto estado. La comunicación fue clara en todo momento. Ya le recomendé a mi grupo de intercambio.",
+  },
+]
+
+function crearEstrellas(n: number) {
+  return "★".repeat(n) + "☆".repeat(5 - n)
+}
+---
+
+<section class="resenas-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-eyebrow">Opiniones reales</span>
+      <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+      <p class="section-subtitle">Más de 500 pedidos enviados a todo Colombia en lo que va del año</p>
+    </div>
+
+    <div class="resenas-grid">
+      {resenas.map((r) => (
+        <article class="resena-card">
+          <div class="resena-top">
+            <div class="avatar" style={`background: ${r.avatarColor}`} aria-hidden="true">
+              {r.avatarLetra}
+            </div>
+            <div class="resena-meta">
+              <span class="resena-nombre">{r.nombre}</span>
+              <span class="resena-ciudad">
+                <span aria-hidden="true">📍</span> {r.ciudad}
+              </span>
+            </div>
+            <div class="resena-fecha">{r.fecha}</div>
+          </div>
+
+          <div class="estrellas" aria-label={`${r.estrellas} de 5 estrellas`}>
+            {crearEstrellas(r.estrellas)}
+          </div>
+
+          <p class="resena-texto">{r.texto}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="resenas-footer">
+      <div class="promedio-badge">
+        <span class="promedio-stars">★★★★☆</span>
+        <span class="promedio-num">4</span>
+        <span class="promedio-label">Calificación promedio · 500+ pedidos</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .resenas-section {
+    background: var(--bg);
+    padding: 4rem 0 5rem;
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .section-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--panini-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.15;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .resenas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .resena-card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-top: 3px solid var(--panini-blue);
+  }
+
+  .resena-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+
+  .resena-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .resena-nombre {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .resena-ciudad {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .resena-fecha {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .estrellas {
+    font-size: 1rem;
+    color: #f59e0b;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  .resena-texto {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* Footer badge */
+  .resenas-footer {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .promedio-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.75rem 1.75rem;
+  }
+
+  .promedio-stars {
+    color: #f59e0b;
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
+  }
+
+  .promedio-num {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .promedio-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .resenas-grid {
+      grid-template-columns: 1fr;
+    }
+    .promedio-badge {
+      flex-wrap: wrap;
+      justify-content: center;
+      text-align: center;
+      border-radius: 12px;
+      gap: 0.5rem;
+    }
+  }
+</style>

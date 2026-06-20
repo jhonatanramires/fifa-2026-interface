@@ -1,0 +1,161 @@
+---
+// HeroAbout.astro – Sección hero de la página About
+---
+
+<section class="hero-about">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Distribuidor Oficial Panini · Medellín, Colombia
+    </div>
+    <h1 class="hero-title">
+      Panini Mundial FIFA 2026
+      <span class="hero-title-highlight">Colombia</span>
+    </h1>
+    <p class="hero-desc">
+      Somos especialistas en productos oficiales Panini FIFA World Cup 2026™. Encuentra álbumes pasta dura, álbum Gold, sobres, cajas y displays Panini para completar tu colección del Mundial.
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number">2026</span>
+        <span class="stat-label">Edición Mundial</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">Productos Oficiales</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-number">Medellín</span>
+        <span class="stat-label">Sede Principal</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stripe"></div>
+</section>
+
+<style>
+  .hero-about {
+    background: var(--panini-blue-dark);
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .hero-about::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 80% 50%, rgba(236,102,7,0.15) 0%, transparent 60%),
+      radial-gradient(circle at 10% 80%, rgba(226,35,26,0.10) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1.25rem 3.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.85);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    margin-bottom: 1.75rem;
+  }
+
+  .badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 2px rgba(74,222,128,0.3);
+    flex-shrink: 0;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.25rem;
+  }
+
+  .hero-title-highlight {
+    display: block;
+    color: var(--panini-blue);
+  }
+
+  .hero-desc {
+    font-size: 1.1rem;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.72);
+    max-width: 560px;
+    margin: 0 0 2.5rem;
+  }
+
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .hero-stripe {
+    height: 6px;
+    background: linear-gradient(90deg, var(--panini-red) 0%, var(--panini-red) 33%, var(--panini-blue) 33%, var(--panini-blue) 66%, #FFCE00 66%, #FFCE00 100%);
+  }
+
+  @media (max-width: 640px) {
+    .hero-inner {
+      padding: 2.5rem 1.25rem 2rem;
+    }
+    .hero-stats {
+      gap: 1.25rem;
+    }
+    .stat-divider {
+      display: none;
+    }
+  }
+</style>
