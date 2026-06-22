@@ -1,4 +1,4 @@
-import type { Loader } from "astro/loaders"
+import type { Loader } from "astro:loaders" // Asegúrate de importar correctamente según tu versión de Astro
 import { sheetLoader } from "astro-sheet-loader"
 import fs from "node:fs"
 import path from "node:path"
@@ -10,6 +10,20 @@ export interface Producto {
   imagen?: string | null
   categorias?: string[] | null
   despacho?: string | null
+}
+
+// Función auxiliar para escapar caracteres reservados en URLs dentro de XML
+function escapeXml(unsafe: string): string {
+  return unsafe.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  })
 }
 
 function normalizeHeader(label: string): string {
@@ -31,12 +45,13 @@ function buildMerchantFeed(products: Producto[]) {
   const siteUrl = import.meta.env.SITE || "https://tusitioweb.com"
   const currency = import.meta.env.MERCHANT_CURRENCY || "COP"
 
+  // Estructura oficial RSS 2.0 admitida por Google Merchant Center
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
   <channel>
-    <title>Catálogo de Productos - Merchant Center</title>
-    <link>${siteUrl}</link>
-    <description>Feed automático de productos para Google Merchant Center</description>`
+    <title><![CDATA[Catálogo de Productos - Merchant Center]]></title>
+    <link>${escapeXml(siteUrl)}</link>
+    <description><![CDATA[Feed automático de productos para Google Merchant Center]]></description>`
 
   products.forEach((prod) => {
     const slug = prod.nombre
@@ -44,19 +59,20 @@ function buildMerchantFeed(products: Producto[]) {
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "")
+      .replace(/(^-|-$)+/g, "").substring(0, 50) // Limitar a 50 caracteres para cumplir con las restricciones de Google Merchant
 
     const productUrl = `${siteUrl}/productos/${slug}`
     const precioStr = prod.precio ? `${prod.precio} ${currency}` : ""
     const categoriaStr = prod.categorias ? prod.categorias.join(" > ") : "MUNDIAL"
 
+    // Blindamos las URLs con escapeXml y las cadenas con CDATA
     xml += `
     <item>
       <g:id>${slug}</g:id>
       <g:title><![CDATA[${prod.nombre}]]></g:title>
       <g:description><![CDATA[${prod.descripcion || prod.nombre}]]></g:description>
-      <g:link>${productUrl}</g:link>
-      <g:image_link>${prod.imagen || ""}</g:image_link>
+      <g:link>${escapeXml(productUrl)}</g:link>
+      <g:image_link>${escapeXml(prod.imagen || "")}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>${precioStr}</g:price>
@@ -156,12 +172,10 @@ export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0])
         )
         context.store.clear()
         FALLBACK.forEach((data, i) => {
-          // El store.set aquí activará automáticamente las transformaciones del esquema de Zod
           context.store.set({ id: `fallback-${i}`, data })
         })
       }
 
-      // Los productos ya se encuentran perfectamente transformados y limpios gracias a Zod
       const totalProducts = Array.from(context.store.values()).map(
         (entry) => entry.data as unknown as Producto
       )

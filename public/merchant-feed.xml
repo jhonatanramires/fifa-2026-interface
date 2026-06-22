@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
   <channel>
-    <title>Catálogo de Productos - Merchant Center</title>
+    <title><![CDATA[Catálogo de Productos - Merchant Center]]></title>
     <link>https://distripanini.com</link>
-    <description>Feed automático de productos para Google Merchant Center</description>
+    <description><![CDATA[Feed automático de productos para Google Merchant Center]]></description>
     <item>
       <g:id>album-mundial-fifa-2026-gold-panini-pasta-dura</g:id>
       <g:title><![CDATA[Album - Mundial FIFA 2026 Gold - Panini (Pasta Dura)]]></g:title>
       <g:description><![CDATA[Completa tu colección oficial del Mundial FIFA 2026 con el Álbum Panini Azul Pasta Dura.]]></g:description>
       <g:link>https://distripanini.com/productos/album-mundial-fifa-2026-gold-panini-pasta-dura</g:link>
-      <g:image_link>https://drive.google.com/thumbnail?id=13l318O6Vg1LJ_Se1wz_jRti8IpLkU9bI&sz=w1000</g:image_link>
+      <g:image_link>https://drive.google.com/thumbnail?id=13l318O6Vg1LJ_Se1wz_jRti8IpLkU9bI&amp;sz=w1000</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>89000 COP</g:price>
@@ -20,7 +20,7 @@
       <g:title><![CDATA[Album - Mundial FIFA 2026 Azul - Panini (Pasta Dura)]]></g:title>
       <g:description><![CDATA[La edición más exclusiva del Álbum Panini Mundial FIFA 2026. Su elegante diseño Gold de pasta dura ofrece una experiencia premium para coleccionistas.]]></g:description>
       <g:link>https://distripanini.com/productos/album-mundial-fifa-2026-azul-panini-pasta-dura</g:link>
-      <g:image_link>https://drive.google.com/thumbnail?id=15gKRYGuwvHFm3LxLffSGh__dHx7olSLe&sz=w1000</g:image_link>
+      <g:image_link>https://drive.google.com/thumbnail?id=15gKRYGuwvHFm3LxLffSGh__dHx7olSLe&amp;sz=w1000</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>59000 COP</g:price>
@@ -31,18 +31,18 @@
       <g:title><![CDATA[Sobre Sorpresa Panini – 7 Stickers Oficiales]]></g:title>
       <g:description><![CDATA[¡Abre y descubre! Cada sobre contiene 7 stickers oficiales Panini para completar tu álbum. Colecciónalos, intercámbialos y busca las figuritas más difíciles de encontrar.]]></g:description>
       <g:link>https://distripanini.com/productos/sobre-sorpresa-panini-7-stickers-oficiales</g:link>
-      <g:image_link>https://drive.google.com/thumbnail?id=1r-SDDggCuUxSroZRJ6hTeSkaqySi0UGO&sz=w1000</g:image_link>
+      <g:image_link>https://drive.google.com/thumbnail?id=1r-SDDggCuUxSroZRJ6hTeSkaqySi0UGO&amp;sz=w1000</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>5000 COP</g:price>
       <g:product_type><![CDATA[MUNDIAL]]></g:product_type>
     </item>
     <item>
-      <g:id>media-caja-x-52-sobres-panini-copa-mundial-fifa-2026</g:id>
+      <g:id>media-caja-x-52-sobres-panini-copa-mundial-fifa-20</g:id>
       <g:title><![CDATA[Media Caja x 52 Sobres Panini - Copa Mundial FIFA 2026]]></g:title>
       <g:description><![CDATA[La media caja oficial Panini de la Copa Mundial FIFA 2026 incluye 52 sobres para avanzar fuerte en tu álbum. Perfecta para coleccionistas que quieren gran surtido sin ir por la caja completa.]]></g:description>
-      <g:link>https://distripanini.com/productos/media-caja-x-52-sobres-panini-copa-mundial-fifa-2026</g:link>
-      <g:image_link>https://drive.google.com/thumbnail?id=1j-bZ8hU-EIxP1W_r9GyybczWQpaeUdwO&sz=w1000</g:image_link>
+      <g:link>https://distripanini.com/productos/media-caja-x-52-sobres-panini-copa-mundial-fifa-20</g:link>
+      <g:image_link>https://drive.google.com/thumbnail?id=1j-bZ8hU-EIxP1W_r9GyybczWQpaeUdwO&amp;sz=w1000</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>5000 COP</g:price>
@@ -53,7 +53,7 @@
       <g:title><![CDATA[Caja x 104 Sobres Panini - Copa Mundial FIFA 2026]]></g:title>
       <g:description><![CDATA[La caja display oficial Panini de la Copa Mundial FIFA 2026 trae 104 sobres para que completes tu álbum al máximo. Ideal para coleccionistas, revendedores o el regalo perfecto para un fanático del fútbol.]]></g:description>
       <g:link>https://distripanini.com/productos/caja-x-104-sobres-panini-copa-mundial-fifa-2026</g:link>
-      <g:image_link>https://drive.google.com/thumbnail?id=153SftDCUeBkrm5nftwViaXP0fhRNw6Ms&sz=w1000</g:image_link>
+      <g:image_link>https://drive.google.com/thumbnail?id=153SftDCUeBkrm5nftwViaXP0fhRNw6Ms&amp;sz=w1000</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>450000 COP</g:price>
