@@ -20,9 +20,9 @@ export async function getStaticPaths() {
   const products = await getCollection("productos");
 
   return products
-    .filter(product => product.data.nombre && product.data.nombre.trim() !== "")
+    .filter(product => product.data.title && product.data.title.trim() !== "")
     .map((product) => {
-      const slug = slugify(product.data.nombre);
+      const slug = slugify(product.data.title);
       return {
         params: { slug },
         props: { product },
@@ -42,17 +42,17 @@ try {
   loadError = err instanceof Error ? err.message : "No se pudieron cargar las configuraciones.";
 }
 
-const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.nombre}`);
+const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.title}`);
 ---
 
-<Layout configs={configs} title={data.nombre}>
+<Layout configs={configs} title={data.title}>
   <main class="product-detail">
     <ProductSchema
-      name={data.nombre}
-      description={data.descripcion}
-      image={data.imagen}
-      price={data.precio}
-      url={`https://distripanini.com/productos/${slugify(data.nombre)}`}
+      name={data.title}
+      description={data.description}
+      image={data.image_link}
+      price={data.price}
+      url={`https://distripanini.com/productos/${slugify(data.title)}`}
     />
     <div class="product-detail__container">
 
@@ -65,10 +65,10 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.no
 
         <!-- Columna imagen -->
         <div class="product-detail__image-wrapper">
-          {data.imagen ? (
+          {data.image_link ? (
             <img
-              src={data.imagen}
-              alt={data.nombre}
+              src={data.image_link}
+              alt={data.title}
               class="product-detail__image"
               loading="lazy"
             />
@@ -82,33 +82,33 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.no
 
         <!-- Columna información -->
         <div class="product-detail__info">
-          <h1 class="product-detail__title">{data.nombre}</h1>
+          <h1 class="product-detail__title">{data.title}</h1>
 
-          {data.despacho && (
+          <!-- {data.shipping && (
             <span class="product-detail__badge">
               <Icon name="fa6-solid:truck" aria-hidden="true" />
               Despacho
             </span>
-          )}
+          )} -->
 
           <p class="product-detail__price">
-            {data.precio
-              ? `$${Number(data.precio).toLocaleString('es-CL')}`
+            {data.price
+              ? `$${Number(data.price).toLocaleString('es-CL')}`
               : 'Precio no disponible'}
           </p>
 
-          {data.descripcion && (
+          {data.description && (
             <div class="product-detail__description">
               <h2 class="product-detail__subheading">Descripción</h2>
-              <p>{data.descripcion}</p>
+              <p>{data.description}</p>
             </div>
           )}
 
-          {data.categorias && (
+          {data.categories && (
             <div class="product-detail__meta">
               <Icon name="fa6-solid:tag" aria-hidden="true" class="product-detail__meta-icon" />
               <span class="product-detail__meta-label">Categorías:</span>
-              <span class="product-detail__meta-value">{data.categorias}</span>
+              <span class="product-detail__meta-value">{data.categories}</span>
             </div>
           )}
 

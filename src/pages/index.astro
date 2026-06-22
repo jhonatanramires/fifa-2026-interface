@@ -34,7 +34,7 @@ const sheetCategories = Array.from(
   new Set(
     productos
       .flatMap((p) => {
-        return p.categorias ?? []
+        return p.categories ?? []
       }) // Aplana todas las categorías en un solo array
       .map((cat) => cat.trim())          // Limpia cada categoría
       .filter(Boolean)                   // Filtra vacíos
@@ -64,12 +64,11 @@ const activeCategory = "MUNDIAL"
         <div class="grid">
           {productos.map((p) => (
             <ProductCard
-              nombre={p.nombre}
-              precio={p.precio}
-              descripcion={p.descripcion}
-              imagen={p.imagen}
-              categorias={p.categorias ?? []}
-              despacho={p.despacho}
+              title={p.title}
+              price={p.price}
+              description={p.description}
+              image_link={p.image_link}
+              categories={p.categories ?? []}
             />
           ))}
         </div>

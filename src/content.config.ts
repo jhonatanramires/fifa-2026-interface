@@ -4,7 +4,7 @@ import { productosSheetLoader } from "./lib/productos-loader"
 import { configSheetLoader } from "./lib/config-loader"
 
 const SHEET_DOCUMENT_ID =
-  import.meta.env.GOOGLE_SHEET_ID ?? "1zQmEDAnDbzOewik5JbpNp9hyCuNbNUWdUWmKdORR8EI"
+  import.meta.env.GOOGLE_SHEET_ID ?? "13skjhCKB9Ma_OBj1xUrenWxocOetqLNQ8L4GE0Z0Ij0"
 
 const SHEET_DOCUMENT_ID_C =
   import.meta.env.GOOGLE_SHEET_ID_C ?? "1-cLfOK4Imck4yJDVm4TkhDKJOTs7ZT6PKENkOoYupRM"
@@ -23,21 +23,25 @@ const productos = defineCollection({
     allowBlanks: true,
   }),
   schema: z.object({
-    nombre: z.string(),
-    precio: z.coerce.number().nullable().optional(),
-    descripcion: z.string().nullable().optional(),
+    id: z.number(),
+    title: z.string(),
+    description: z.string(),
+    availability: z.enum(["in_stock", "out_of_stock"]),
+    link: z.string(),
+    price: z.number(),
+    identifier_exists: z.enum(["yes", "no"]),
+    brand: z.string(),
     // PROCESAMIENTO ÚNICO: Transforma la URL de la imagen al entrar al store
-    imagen: z.preprocess((val) => resolveImageUrl(val as string | null), z.string()),
+    image_link: z.preprocess((val) => resolveImageUrl(val as string | null), z.string()),
     // PROCESAMIENTO ÚNICO: Convierte texto separado por comas o maneja arreglos limpios
-    categorias: z.preprocess((val) => {
+    categories: z.preprocess((val) => {
       if (!val) return ["MUNDIAL"];
       if (typeof val === "string") {
         return val.split(",").map((c) => c.trim()).filter(Boolean);
       }
       if (Array.isArray(val)) return val;
       return ["MUNDIAL"];
-    }, z.array(z.string())),
-    despacho: z.string().nullable().optional(),
+    }, z.array(z.string()))
   }),
 })
 

@@ -4,12 +4,16 @@ import fs from "node:fs"
 import path from "node:path"
 
 export interface Producto {
-  nombre: string
-  precio?: number | null
-  descripcion?: string | null
-  imagen?: string | null
-  categorias?: string[] | null
-  despacho?: string | null
+  id: number
+  title: string
+  description: string
+  availability: ["in_stock", "out_of_stock"]
+  link: string
+  image_link: string
+  price: number
+  identifier_exists: ["yes", "no"]
+  brand: string
+  categories: string[]
 }
 
 // Función auxiliar para escapar caracteres reservados en URLs dentro de XML
@@ -26,20 +30,6 @@ function escapeXml(unsafe: string): string {
   })
 }
 
-function normalizeHeader(label: string): string {
-  const key = `${label}`
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") 
-    .toLowerCase()
-    .trim()
-  if (key.includes("imagen") || key.includes("foto") || key.includes("img")) return "imagen"
-  if (key.includes("descrip")) return "descripcion"
-  if (key.includes("precio")) return "precio"
-  if (key.includes("nombre") || key.includes("producto") || key.includes("titulo")) return "nombre"
-  if (key.includes("categor")) return "categorias"
-  if (key.includes("despacho") || key.includes("envio")) return "despacho"
-  return key.replace(/\s+/g, "_")
-}
 
 function buildMerchantFeed(products: Producto[]) {
   const siteUrl = import.meta.env.SITE || "https://tusitioweb.com"
@@ -54,7 +44,7 @@ function buildMerchantFeed(products: Producto[]) {
     <description><![CDATA[Feed automático de productos para Google Merchant Center]]></description>`
 
   products.forEach((prod) => {
-    const slug = prod.nombre
+    const slug = prod.title
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -62,17 +52,17 @@ function buildMerchantFeed(products: Producto[]) {
       .replace(/(^-|-$)+/g, "").substring(0, 50) // Limitar a 50 caracteres para cumplir con las restricciones de Google Merchant
 
     const productUrl = `${siteUrl}/productos/${slug}`
-    const precioStr = prod.precio ? `${prod.precio} ${currency}` : ""
-    const categoriaStr = prod.categorias ? prod.categorias.join(" > ") : "MUNDIAL"
+    const precioStr = prod.price ? `${prod.price} ${currency}` : ""
+    const categoriaStr = prod.categories ? prod.categories.join(" > ") : "MUNDIAL"
 
     // Blindamos las URLs con escapeXml y las cadenas con CDATA
     xml += `
     <item>
       <g:id>${slug}</g:id>
-      <g:title><![CDATA[${prod.nombre}]]></g:title>
-      <g:description><![CDATA[${prod.descripcion || prod.nombre}]]></g:description>
+      <g:title><![CDATA[${prod.title}]]></g:title>
+      <g:description><![CDATA[${prod.description || prod.title}]]></g:description>
       <g:link>${escapeXml(productUrl)}</g:link>
-      <g:image_link>${escapeXml(prod.imagen || "")}</g:image_link>
+      <g:image_link>${escapeXml(prod.image_link || "")}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>${precioStr}</g:price>
@@ -156,7 +146,7 @@ const FALLBACK = [
 ]
 
 export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0]): Loader {
-  const inner = sheetLoader({ ...options, transformHeader: normalizeHeader })
+  const inner = sheetLoader({ ...options })
   return {
     name: "productos-sheet-loader",
     schema: inner.schema,

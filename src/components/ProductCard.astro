@@ -1,58 +1,53 @@
 ---
 import { slugify } from '../lib/utils'
-// Agregamos la prop href (obligatoria)
-interface Props {
-  nombre: string
-  precio?: number | null
-  descripcion?: string | null
-  imagen?: string | null
-  categorias?: string[]
-  despacho?: string | null
+import type { Producto } from '../lib/productos-loader'
+interface ProductCardProps extends Producto {
+  
 }
 
-const { nombre, precio, descripcion, imagen, categorias, despacho } = Astro.props
+const { title, price, description, image_link, categories } = Astro.props
 
-const precioFmt =
-  precio != null
+const priceFmt =
+  price != null
     ? new Intl.NumberFormat("es-CO", {
         style: "currency",
         currency: "COP",
         maximumFractionDigits: 0,
-      }).format(precio)
+      }).format(price)
     : "Consultar precio"
 
-const href = `productos/${slugify(nombre)}`
+const href = `productos/${slugify(title)}`
 
 ---
 
 <!-- article con position:relative para que el enlace absoluto se posicione dentro -->
 <article 
   class="card" 
-  data-product-categories={Array.isArray(categorias) ? categorias.join('|') : ''}
+  data-product-categories={Array.isArray(categories) ? categories.join('|') : ''}
   style="position: relative;"
 >
   <!-- Enlace overlay: ocupa todo el article y está por encima -->
   <a 
     href={href}
     style="position: absolute; inset: 0; z-index: 1; display: block;"
-    aria-label={`Ver detalles de ${nombre}`}
+    aria-label={`Ver detalles de ${title}`}
   ></a>
 
   <div class="card-media">
     {
-      imagen ? (
-        <img src={imagen} alt={nombre} loading="lazy" />
+      image_link ? (
+        <img src={image_link} alt={title} loading="lazy" />
       ) : (
         <span class="no-image">Sin imagen</span>
       )
     }
   </div>
-
-  {despacho && <p class="despacho">{despacho}</p>}
+<!-- 
+  {shipping && <p class="despacho">{shipping}</p>} -->
 
   <div class="card-body">
-    <h2 class="card-title text-pretty">{nombre}</h2>
-    {descripcion && <p class="card-desc text-pretty">{descripcion}</p>}
-    <p class="card-price">{precioFmt}</p>
+    <h2 class="card-title text-pretty">{title}</h2>
+    {description && <p class="card-desc text-pretty">{description}</p>}
+    <p class="card-price">{priceFmt}</p>
   </div>
 </article>
