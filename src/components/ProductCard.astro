@@ -1,4 +1,5 @@
 ---
+import { slugify } from '../lib/utils'
 // Agregamos la prop href (obligatoria)
 interface Props {
   nombre: string
@@ -7,11 +8,9 @@ interface Props {
   imagen?: string | null
   categorias?: string[]
   despacho?: string | null
-  whatsapp: string
-  mensaje: string | null
 }
 
-const { nombre, precio, descripcion, imagen, categorias, despacho, whatsapp, mensaje } = Astro.props
+const { nombre, precio, descripcion, imagen, categorias, despacho } = Astro.props
 
 const precioFmt =
   precio != null
@@ -22,17 +21,7 @@ const precioFmt =
       }).format(precio)
     : "Consultar precio"
 
-function generarLinkWhatsApp(numero: string, texto: string): string {
-  // Limpia el número: deja solo dígitos (quita espacios, +, guiones, paréntesis)
-  const numeroLimpio = numero.replace(/[^\d]/g, '');
-  
-  // Codifica el texto para que sea válido en una URL
-  const textoCodificado = encodeURIComponent(texto);
-  
-  return `https://wa.me/${numeroLimpio}?text=${textoCodificado}`;
-}
-
-const href = generarLinkWhatsApp(whatsapp, `${mensaje} ${nombre}`)
+const href = `productos/${slugify(nombre)}`
 
 ---
 

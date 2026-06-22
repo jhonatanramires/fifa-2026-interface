@@ -1,0 +1,341 @@
+---
+import { getCollection } from "astro:content";
+import { generarLinkWhatsApp } from "../../lib/utils";
+import type { Config } from "../../lib/config-loader";
+import Layout from "../../layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+
+export async function getStaticPaths() {
+  function slugify(text: string): string {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  const products = await getCollection("productos");
+
+  return products
+    .filter(product => product.data.nombre && product.data.nombre.trim() !== "")
+    .map((product) => {
+      const slug = slugify(product.data.nombre);
+      return {
+        params: { slug },
+        props: { product },
+      };
+    });
+}
+
+const { product } = Astro.props;
+const { data } = product;
+
+let configs: Config = {} as Config;
+let loadError: string | null = null;
+try {
+  const config = await getCollection("configuraciones");
+  configs = config[0]?.data as Config;
+} catch (err) {
+  loadError = err instanceof Error ? err.message : "No se pudieron cargar las configuraciones.";
+}
+
+const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.nombre}`);
+---
+
+<Layout configs={configs} title={data.nombre}>
+  <main class="product-detail">
+    <div class="product-detail__container">
+
+      <a href="/" class="product-detail__back">
+        <Icon name="fa6-solid:arrow-left" aria-hidden="true" />
+        Volver a productos
+      </a>
+
+      <div class="product-detail__grid">
+
+        <!-- Columna imagen -->
+        <div class="product-detail__image-wrapper">
+          {data.imagen ? (
+            <img
+              src={data.imagen}
+              alt={data.nombre}
+              class="product-detail__image"
+              loading="lazy"
+            />
+          ) : (
+            <div class="product-detail__no-image">
+              <Icon name="fa6-regular:image" aria-hidden="true" />
+              <span>Sin imagen</span>
+            </div>
+          )}
+        </div>
+
+        <!-- Columna información -->
+        <div class="product-detail__info">
+          <h1 class="product-detail__title">{data.nombre}</h1>
+
+          {data.despacho && (
+            <span class="product-detail__badge">
+              <Icon name="fa6-solid:truck" aria-hidden="true" />
+              Despacho
+            </span>
+          )}
+
+          <p class="product-detail__price">
+            {data.precio
+              ? `$${Number(data.precio).toLocaleString('es-CL')}`
+              : 'Precio no disponible'}
+          </p>
+
+          {data.descripcion && (
+            <div class="product-detail__description">
+              <h2 class="product-detail__subheading">Descripción</h2>
+              <p>{data.descripcion}</p>
+            </div>
+          )}
+
+          {data.categorias && (
+            <div class="product-detail__meta">
+              <Icon name="fa6-solid:tag" aria-hidden="true" class="product-detail__meta-icon" />
+              <span class="product-detail__meta-label">Categorías:</span>
+              <span class="product-detail__meta-value">{data.categorias}</span>
+            </div>
+          )}
+
+          <a href={href} target="_blank" rel="noopener noreferrer" class="product-detail__buy-btn">
+            <Icon name="fa6-brands:whatsapp" aria-hidden="true" />
+            Comprar por WhatsApp
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* --- Iconos: astro-icon renderiza el svg directamente, se estila con [data-icon] scoped --- */
+  [data-icon] {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: -0.125em;
+    flex-shrink: 0;
+  }
+
+  .product-detail {
+    background: var(--bg);
+    padding: 2rem 1.25rem 4rem;
+    min-height: 100%;
+    box-sizing: border-box;
+  }
+
+  .product-detail__container {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* --- Volver --- */
+  .product-detail__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+
+  .product-detail__back:hover {
+    color: var(--panini-blue);
+  }
+
+  /* --- Grid principal --- */
+  .product-detail__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .product-detail__grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 1.25rem;
+    }
+  }
+
+  /* --- Imagen --- */
+  .product-detail__image-wrapper {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .product-detail__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .product-detail__no-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-muted);
+    font-size: 3rem;
+    opacity: 0.4;
+  }
+
+  .product-detail__no-image span {
+    font-size: 1rem;
+    opacity: 1;
+  }
+
+  /* --- Info --- */
+  .product-detail__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .product-detail__title {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.25;
+    color: var(--text);
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* --- Badge --- */
+  .product-detail__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--panini-red);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    align-self: flex-start;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  /* --- Precio --- */
+  .product-detail__price {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--panini-blue);
+    margin: 0;
+    word-break: break-word;
+  }
+
+  /* --- Descripción --- */
+  .product-detail__description {
+    border-top: 1px solid var(--border);
+    padding-top: 1.25rem;
+  }
+
+  .product-detail__subheading {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: var(--text);
+  }
+
+  .product-detail__description p {
+    margin: 0;
+    line-height: 1.7;
+    color: var(--text-muted);
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* --- Meta / Categorías --- */
+  .product-detail__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+    color: var(--text-muted);
+  }
+
+  .product-detail__meta-icon {
+    color: var(--panini-blue);
+  }
+
+  .product-detail__meta-label {
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .product-detail__meta-value {
+    color: var(--text-muted);
+    word-break: break-word;
+  }
+
+  /* --- Botón comprar --- */
+  .product-detail__buy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: var(--panini-blue);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 0.85rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    align-self: flex-start;
+    margin-top: auto;
+    white-space: nowrap;
+  }
+
+  .product-detail__buy-btn [data-icon] {
+    font-size: 1.2rem;
+    width: 1.2em;
+    height: 1.2em;
+  }
+
+  .product-detail__buy-btn:hover {
+    background: var(--panini-blue-dark);
+  }
+
+  .product-detail__buy-btn:active {
+    transform: scale(0.97);
+  }
+</style>

@@ -1,6 +1,15 @@
 import type { Loader } from "astro/loaders"
 import { sheetLoader } from "astro-sheet-loader"
 
+export interface Producto {
+  nombre: string
+  precio?: number | null
+  descripcion?: string | null
+  imagen?: string | null
+  categorias?: string[] | null
+  despacho?: string | null
+}
+
 // Normalize sheet headers (with accents/spaces) into clean schema keys.
 // e.g. "Nombre" -> "nombre", "Descripción" -> "descripcion", "Link Imagen" -> "imagen"
 function normalizeHeader(label: string): string {
