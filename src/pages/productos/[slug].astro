@@ -4,6 +4,8 @@ import { generarLinkWhatsApp } from "../../lib/utils";
 import type { Config } from "../../lib/config-loader";
 import Layout from "../../layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
+import { slugify } from "../../lib/utils";
+import ProductSchema from "../../components/ProductSchema.astro";
 
 export async function getStaticPaths() {
   function slugify(text: string): string {
@@ -45,6 +47,13 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.no
 
 <Layout configs={configs} title={data.nombre}>
   <main class="product-detail">
+    <ProductSchema
+      name={data.nombre}
+      description={data.descripcion}
+      image={data.imagen}
+      price={data.precio}
+      url={`https://distripanini.com/productos/${slugify(data.nombre)}`}
+    />
     <div class="product-detail__container">
 
       <a href="/" class="product-detail__back">

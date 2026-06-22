@@ -3,23 +3,11 @@ import { glob } from "astro/loaders"
 import { productosSheetLoader } from "./lib/productos-loader"
 import { configSheetLoader } from "./lib/config-loader"
 
-// Replace this with your own Google Sheet document ID.
-// The sheet must be shared as "Anyone on the internet with the link can view".
-// You can also set GOOGLE_SHEET_ID in your environment to override it.
 const SHEET_DOCUMENT_ID =
   import.meta.env.GOOGLE_SHEET_ID ?? "1zQmEDAnDbzOewik5JbpNp9hyCuNbNUWdUWmKdORR8EI"
 
-// Columns in the connected Google Sheet (header row):
-//   Nombre | Precio | Descripción | Link Imagen
-//
-// The loader normalizes those headers to the clean keys below. Optional columns
-// "Categoria" and "Despacho" are also supported if you add them to the sheet.
-
 const SHEET_DOCUMENT_ID_C =
   import.meta.env.GOOGLE_SHEET_ID_C ?? "1-cLfOK4Imck4yJDVm4TkhDKJOTs7ZT6PKENkOoYupRM"
-
-// Columns in the connected Google Sheet Configs (header row):
-//   WHATSAPP | MENSAJE | EMAIL | FACEBOOK | INSTAGRAM | YOUTUBE | TWITTER | TIKTOK
 
 const productos = defineCollection({
   loader: productosSheetLoader({
@@ -31,7 +19,7 @@ const productos = defineCollection({
     precio: z.coerce.number().nullable().optional(),
     descripcion: z.string().nullable().optional(),
     imagen: z.string().nullable().optional(),
-    categorias: z.string().nullable().optional(),
+    categorias: z.array(z.string()).nullable().optional(), // Ajustado a Arreglo de Strings
     despacho: z.string().nullable().optional(),
   }),
 })
@@ -64,7 +52,7 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     description: z.string(),
-    category: z.enum(['Tutoriales', 'Noticias', 'Análisis', 'Opinión']),
+    category: z.enum(['Tutoriales', 'Noticias', 'Análisis', 'Opinión', 'Legal']),
     image: z.string().optional(),
   })
 })

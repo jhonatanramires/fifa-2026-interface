@@ -1,0 +1,65 @@
+---
+interface Props {
+  name: string;
+  description: string | null;
+  image: string | null;
+  price: number | null;
+  sku: string;
+  brand?: string;
+  inStock?: boolean;
+  url: string;
+}
+
+const {
+  name,
+  description,
+  image,
+  price,
+  sku,
+  brand = "Panini",
+  inStock = true,
+  url,
+} = Astro.props;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name,
+  description,
+  image,
+  sku,
+  brand: {
+    "@type": "Brand",
+    name: brand,
+  },
+  offers: {
+    "@type": "Offer",
+    url,
+    priceCurrency: "COP",
+    price,
+    availability: inStock
+      ? "https://schema.org/InStock"
+      : "https://schema.org/OutOfStock",
+    itemCondition: "https://schema.org/NewCondition",
+    seller: {
+      "@type": "Organization",
+      name: "Distribuidora Panini",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Medellín",
+        addressRegion: "Antioquia",
+        addressCountry: "CO",
+      },
+    },
+    shippingDetails: {
+      "@type": "OfferShippingDetails",
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "CO",
+      },
+    },
+  },
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />

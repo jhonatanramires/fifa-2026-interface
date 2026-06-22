@@ -1,5 +1,7 @@
 import type { Loader } from "astro/loaders"
 import { sheetLoader } from "astro-sheet-loader"
+import fs from "node:fs"
+import path from "node:path"
 
 export interface Producto {
   nombre: string
@@ -11,7 +13,6 @@ export interface Producto {
 }
 
 // Normalize sheet headers (with accents/spaces) into clean schema keys.
-// e.g. "Nombre" -> "nombre", "Descripción" -> "descripcion", "Link Imagen" -> "imagen"
 function normalizeHeader(label: string): string {
   const key = `${label}`
     .normalize("NFD")
@@ -40,19 +41,68 @@ function resolveCategories(categories?: string | null): string[] {
     if (!categories) {
         return ["MUNDIAL"];
     }
-    // Tu lógica aquí
-    return categories.split(',');
+    return categories.split(',').map(c => c.trim());
 }
 
+// Genera el archivo XML para Google Merchant Center
+function buildMerchantFeed(products: Producto[]) {
+  const siteUrl = import.meta.env.SITE || "https://tusitioweb.com"
+  const currency = import.meta.env.MERCHANT_CURRENCY || "COP"
 
-// Sample data shown only when the Google Sheet can't be loaded yet
-// (e.g. while the placeholder document ID is still in place).
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+  <channel>
+    <title>Catálogo de Productos - Merchant Center</title>
+    <link>${siteUrl}</link>
+    <description>Feed automático de productos para Google Merchant Center</description>`
+
+  products.forEach((prod) => {
+    const slug = prod.nombre
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "")
+
+    const productUrl = `${siteUrl}/productos/${slug}`
+    const precioStr = prod.precio ? `${prod.precio} ${currency}` : ""
+    const categoriaStr = prod.categorias ? prod.categorias.join(" > ") : "MUNDIAL"
+
+    xml += `
+    <item>
+      <g:id>${slug}</g:id>
+      <g:title><![CDATA[${prod.nombre}]]></g:title>
+      <g:description><![CDATA[${prod.descripcion || prod.nombre}]]></g:description>
+      <g:link>${productUrl}</g:link>
+      <g:image_link>${prod.imagen || ""}</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>in_stock</g:availability>
+      <g:price>${precioStr}</g:price>
+      <g:product_type><![CDATA[${categoriaStr}]]></g:product_type>
+    </item>`
+  })
+
+  xml += `
+  </channel>
+</rss>`
+
+  try {
+    const publicDir = path.resolve("public")
+    if (!fs.existsSync(publicDir)) {
+      fs.mkdirSync(publicDir, { recursive: true })
+    }
+    fs.writeFileSync(path.join(publicDir, "merchant-feed.xml"), xml, "utf-8")
+    console.log("✅ Google Merchant Feed generado con éxito en /public/merchant-feed.xml")
+  } catch (error) {
+    console.error("❌ Error al escribir el archivo de Google Merchant Center:", error)
+  }
+}
+
 const FALLBACK = [
   {
     nombre: "Display x 104 sobres COPA MUNDIAL DE LA FIFA 2026™",
     precio: 520000,
-    imagen:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-IwTvQEK4NETyL5Ab34olDGlD78VNQQ.png",
+    imagen: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-IwTvQEK4NETyL5Ab34olDGlD78VNQQ.png",
     categorias: "MUNDIAL",
     despacho: "Despacho a partir del 30 de junio",
   },
@@ -107,11 +157,6 @@ const FALLBACK = [
   },
 ]
 
-/**
- * Wraps astro-sheet-loader so an unreachable / placeholder sheet does not crash
- * the build. The real sheet is the source of truth once a valid ID is provided;
- * until then we seed sample products so the UI stays previewable.
- */
 export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0]): Loader {
   const inner = sheetLoader({ ...options, transformHeader: normalizeHeader })
   return {
@@ -121,25 +166,35 @@ export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0])
       try {
         await inner.load(context)
         if (context.store.keys().length === 0) throw new Error("La hoja no devolvió filas.")
-        // Normalize image URLs and ensure every product has a category.
+        
         for (const entry of context.store.values()) {
           const data = entry.data as Record<string, unknown>
           data.imagen = resolveImageUrl(data.imagen as string | undefined)
           data.categorias = resolveCategories(data.categorias as string | undefined)
           context.store.set({ id: entry.id, data })
         }
-        return
       } catch (err) {
         context.logger.warn(
           `No se pudo cargar Google Sheets (${
             err instanceof Error ? err.message : "error desconocido"
-          }). Usando productos de ejemplo. Actualiza GOOGLE_SHEET_ID o el document en src/content.config.ts.`,
+          }). Usando productos de ejemplo.`
         )
         context.store.clear()
-        FALLBACK.forEach((data, i) => {
+        FALLBACK.forEach((item, i) => {
+          const data = {
+            ...item,
+            imagen: resolveImageUrl(item.imagen),
+            categorias: resolveCategories(item.categorias)
+          }
           context.store.set({ id: `fallback-${i}`, data })
         })
       }
+
+      // CORRECCIÓN AQUÍ: Se añade "as unknown as Producto" para evitar el error TS(2352)
+      const totalProducts = Array.from(context.store.values()).map(
+        (entry) => entry.data as unknown as Producto
+      )
+      buildMerchantFeed(totalProducts)
     },
   }
 }
