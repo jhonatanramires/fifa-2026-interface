@@ -19,7 +19,7 @@ try {
 } catch (err) {
   loadError = err instanceof Error ? err.message : "No se pudieron cargar las configuraciones."
 }
-console.log("Configs cargadas:", configs)
+
 try {
   const entries = await getCollection("productos")
   productos = entries.map((e) => e.data)
@@ -70,8 +70,6 @@ const activeCategory = "MUNDIAL"
               imagen={p.imagen}
               categorias={p.categorias ?? []}
               despacho={p.despacho}
-              whatsapp={configs.WHATSAPP}
-              mensaje={configs.MENSAJE}
             />
           ))}
         </div>
