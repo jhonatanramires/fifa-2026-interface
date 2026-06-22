@@ -1,4 +1,5 @@
 import { defineCollection, z } from "astro:content"
+import { glob } from "astro/loaders"
 import { productosSheetLoader } from "./lib/productos-loader"
 import { configSheetLoader } from "./lib/config-loader"
 
@@ -53,4 +54,19 @@ const configuraciones = defineCollection({
   })
 })
 
-export const collections = { productos, configuraciones }
+const blog = defineCollection({
+  loader: glob({
+    pattern: '**/[^_]*.md', 
+    base: './src/content/blog/'
+  }),
+  schema: z.object({
+    title: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    description: z.string(),
+    category: z.enum(['Tutoriales', 'Noticias', 'Análisis', 'Opinión']),
+    image: z.string().optional(),
+  })
+})
+
+export const collections = { productos, configuraciones, blog }

@@ -1,0 +1,37 @@
+---
+import {getCollection, render} from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import type { Config } from "../../lib/config-loader";
+import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+
+export const getStaticPaths = (async () => {
+    const posts = await getCollection("blog");
+    return posts.map(post => ({
+        params: {id: post.id},
+        props: {post},
+    }))
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { post } = Astro.props as Props;
+const { Content }  = await render(post);
+
+let configs: Config = {} as Config
+let loadError: string | null = null
+try {
+  const config = await getCollection("configuraciones")
+  configs = config[0]?.data as Config
+} catch (err) {
+  loadError = err instanceof Error ? err.message : "No se pudieron cargar las configuraciones."
+}
+console.log(post)
+---
+
+<Layout configs={configs} title={post.data.title}>
+  <main class="container">
+    <article class="prose prose-invert">
+      <h1>{post.data.title}</h1>
+      <p class="text-sm text-gray-400">{new Date(post.data.pubDate).toLocaleDateString()}</p>
+      <Content />
+    </article>
+  </main>
