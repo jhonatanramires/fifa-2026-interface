@@ -9,6 +9,14 @@ const SHEET_DOCUMENT_ID =
 const SHEET_DOCUMENT_ID_C =
   import.meta.env.GOOGLE_SHEET_ID_C ?? "1-cLfOK4Imck4yJDVm4TkhDKJOTs7ZT6PKENkOoYupRM"
 
+// Función auxiliar para resolver URLs de Google Drive en el esquema
+function resolveImageUrl(url?: string | null): string {
+  if (!url) return ""
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/) ?? url.match(/[?&]id=([^&]+)/)
+  if (driveMatch) return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`
+  return url
+}
+
 const productos = defineCollection({
   loader: productosSheetLoader({
     document: SHEET_DOCUMENT_ID,
@@ -18,9 +26,17 @@ const productos = defineCollection({
     nombre: z.string(),
     precio: z.coerce.number().nullable().optional(),
     descripcion: z.string().nullable().optional(),
-    imagen: z.string().nullable().optional(),
-    // SOLUCIÓN: Preprocesamos el valor para transformar texto separado por comas en un arreglo real
-    categorias: (z.string()).optional(),
+    // PROCESAMIENTO ÚNICO: Transforma la URL de la imagen al entrar al store
+    imagen: z.preprocess((val) => resolveImageUrl(val as string | null), z.string()),
+    // PROCESAMIENTO ÚNICO: Convierte texto separado por comas o maneja arreglos limpios
+    categorias: z.preprocess((val) => {
+      if (!val) return ["MUNDIAL"];
+      if (typeof val === "string") {
+        return val.split(",").map((c) => c.trim()).filter(Boolean);
+      }
+      if (Array.isArray(val)) return val;
+      return ["MUNDIAL"];
+    }, z.array(z.string())),
     despacho: z.string().nullable().optional(),
   }),
 })

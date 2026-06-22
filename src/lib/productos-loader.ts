@@ -27,23 +27,6 @@ function normalizeHeader(label: string): string {
   return key.replace(/\s+/g, "_")
 }
 
-function resolveImageUrl(url?: string | null): string {
-  if (!url) return ""
-  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/) ?? url.match(/[?&]id=([^&]+)/)
-  if (driveMatch) return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`
-  return url
-}
-
-// Modificado para aceptar cualquier tipo (unknown) de entrada de forma segura
-function resolveCategories(categories?: unknown): string[] {
-  if (!categories) return ["MUNDIAL"];
-  if (Array.isArray(categories)) return categories;
-  if (typeof categories === "string") {
-    return categories.split(',').map(c => c.trim()).filter(Boolean);
-  }
-  return ["MUNDIAL"];
-}
-
 function buildMerchantFeed(products: Producto[]) {
   const siteUrl = import.meta.env.SITE || "https://tusitioweb.com"
   const currency = import.meta.env.MERCHANT_CURRENCY || "COP"
@@ -165,13 +148,6 @@ export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0])
       try {
         await inner.load(context)
         if (context.store.keys().length === 0) throw new Error("La hoja no devolvió filas.")
-        
-        for (const entry of context.store.values()) {
-          const data = entry.data as Record<string, unknown>
-          data.imagen = resolveImageUrl(data.imagen as string | undefined)
-          data.categorias = resolveCategories(data.categorias)
-          context.store.set({ id: entry.id, data })
-        }
       } catch (err) {
         context.logger.warn(
           `No se pudo cargar Google Sheets (${
@@ -179,17 +155,13 @@ export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0])
           }). Usando productos de ejemplo.`
         )
         context.store.clear()
-        FALLBACK.forEach((item, i) => {
-          const data = {
-            ...item,
-            imagen: resolveImageUrl(item.imagen),
-            categorias: resolveCategories(item.categorias)
-          }
+        FALLBACK.forEach((data, i) => {
+          // El store.set aquí activará automáticamente las transformaciones del esquema de Zod
           context.store.set({ id: `fallback-${i}`, data })
         })
       }
 
-      // Mapeo seguro usando unknown para evitar errores de compilación estrictos de TypeScript
+      // Los productos ya se encuentran perfectamente transformados y limpios gracias a Zod
       const totalProducts = Array.from(context.store.values()).map(
         (entry) => entry.data as unknown as Producto
       )

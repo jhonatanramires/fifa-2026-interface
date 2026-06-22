@@ -17,3 +17,4 @@ node_modules
 pnpm-lock.yaml
 *.lock
 pnpm-workspace.yaml
+dist
