@@ -1,5 +1,7 @@
 ---
 import type { Config } from "../lib/config-loader"
+import { Icon } from "astro-icon/components"
+
 interface Props {
   configs?: Config
 }
@@ -8,14 +10,24 @@ const { configs } = Astro.props
 
 <footer class="panini-footer">
   <div class="footer-container">
-    
+
     <!-- Columna 1: Información de la tienda -->
     <div class="footer-column">
       <h3>Tu Distribuidor Panini</h3>
       <li><a href="about">¿Quiénes somos?</a></li>
       <p>Somos distribuidores oficiales de los álbumes, cajas y colecciones más exclusivas de Panini. ¡La historia que se pega para siempre!</p>
-      <p style={`display: ${configs?.DIR ? "" : "none"}`} ><i class="fas fa-map-marker-alt"></i> {configs?.DIR ?? "#"}</p>
-      <p style={`display: ${configs?.EMAIL ? "" : "none"}`} ><i class="fas fa-envelope"></i> {configs?.EMAIL ?? "#"}</p>
+      {configs?.DIR && (
+        <p>
+          <Icon name="fa6-solid:location-dot" aria-hidden="true" />
+          {configs.DIR}
+        </p>
+      )}
+      {configs?.EMAIL && (
+        <p>
+          <Icon name="fa6-solid:envelope" aria-hidden="true" />
+          {configs.EMAIL}
+        </p>
+      )}
     </div>
 
     <!-- Columna 2: Descripción corta -->
@@ -24,28 +36,36 @@ const { configs } = Astro.props
       <p>Vive la emoción del Mundial 2026 y completa tu colección oficial Panini. Encuentra todo lo que necesitas para llenar tu álbum: cajas Panini Mundial 2026, displays de sobres, álbum Panini FIFA 2026 pasta dura azul y la exclusiva edición Álbum Panini Gold pasta dura.</p>
     </div>
 
-    <!-- Columna 3: Enlaces Rápidos
-    <div class="footer-column">
-      <h3>Enlaces Rápidos</h3>
-      <ul>
-        <li><a href="#">Álbumes y Colecciones</a></li>
-        <li><a href="#">Cajas y Sobres</a></li>
-        <li><a href="#">Próximos Lanzamientos</a></li>
-        <li><a href="#">Contacto y Ayuda</a></li>
-      </ul>
-    </div> -->
-
     <!-- Columna 3: Redes Sociales -->
     <div class="footer-column">
       <h3>Síguenos</h3>
       <p>Enterate de todas las novedades y lanzamientos en tiempo real.</p>
       <div class="social-links">
-        <!-- Reemplaza los '#' con tus URLs reales -->
-        <a href={configs?.FACEBOOK ?? "#"} style={`display: ${configs?.FACEBOOK ? "" : "none"}`} class="fab fa-facebook-f" aria-label="Facebook"></a>
-        <a href={configs?.INSTAGRAM ?? "#"} style={`display: ${configs?.INSTAGRAM ? "" : "none"}`} class="fab fa-instagram" aria-label="Instagram"></a>
-        <a href={configs?.YOUTUBE ?? "#"} style={`display: ${configs?.YOUTUBE ? "" : "none"}`} class="fab fa-youtube" aria-label="YouTube"></a>
-        <a href={configs?.TWITTER ?? "#"} style={`display: ${configs?.TWITTER ? "" : "none"}`} class="fa-brands fa-twitter fab fa-x-twitter" aria-label="X/Twitter"></a>
-        <a href={configs?.TIKTOK ?? "#"} style={`display: ${configs?.TIKTOK ? "" : "none"}`} class="fab fa-tiktok" aria-label="TikTok"></a>
+        {configs?.FACEBOOK && (
+          <a href={configs.FACEBOOK} aria-label="Facebook" class="social-link social-link--facebook">
+            <Icon name="fa6-brands:facebook-f" />
+          </a>
+        )}
+        {configs?.INSTAGRAM && (
+          <a href={configs.INSTAGRAM} aria-label="Instagram" class="social-link social-link--instagram">
+            <Icon name="fa6-brands:instagram" />
+          </a>
+        )}
+        {configs?.YOUTUBE && (
+          <a href={configs.YOUTUBE} aria-label="YouTube" class="social-link social-link--youtube">
+            <Icon name="fa6-brands:youtube" />
+          </a>
+        )}
+        {configs?.TWITTER && (
+          <a href={configs.TWITTER} aria-label="X/Twitter" class="social-link social-link--twitter">
+            <Icon name="fa6-brands:x-twitter" />
+          </a>
+        )}
+        {configs?.TIKTOK && (
+          <a href={configs.TIKTOK} aria-label="TikTok" class="social-link social-link--tiktok">
+            <Icon name="fa6-brands:tiktok" />
+          </a>
+        )}
       </div>
     </div>
 
@@ -53,28 +73,21 @@ const { configs } = Astro.props
 
   <!-- Derechos de autor -->
   <div class="footer-bottom">
-    <p>&copy; {new Date().getFullYear()} Tu Distribuidor Panini. Todos los derechos reservados. 
+    <p>&copy; {new Date().getFullYear()} Tu Distribuidor Panini. Todos los derechos reservados.
       <br><span style="font-size: 0.7rem; opacity: 0.7;">Este sitio opera como distribuidor independiente de productos Panini.</span>
     </p>
-        <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.8;">
-      Desarrollado y gestionado por 
-      <a href={"https://jhorodriguezra.onrender.com/"} target="_blank" rel="noopener noreferrer" style="color: var(--panini-orange); text-decoration: none; font-weight: bold;">
+    <p style="margin-top: 12px; font-size: 0.75rem; opacity: 0.8;">
+      Desarrollado y gestionado por
+      <a href="https://jhorodriguezra.onrender.com/" target="_blank" rel="noopener noreferrer" class="footer-link">
         Niusoft
       </a>
-      <!-- Contacto opcional que aparece solo si tienes configurado el email en tus configs -->
-      <span>
-         · <a href={`mailto:adm.jhonatanramires@gmail.com`} style="color: var(--panini-orange); text-decoration: none;">Contactar</a>
-      </span>
+      · <a href="mailto:adm.jhonatanramires@gmail.com" class="footer-link">Contactar</a>
     </p>
   </div>
 </footer>
 
 <style>
-  /* NOTA: Asegúrate de tener importada la librería de FontAwesome 
-     en el <head> de tu Layout.astro principal para que los iconos se vean. */
-  
   .panini-footer {
-    /* Variables de color propias del componente */
     --panini-orange: #F58A1E;
     --panini-yellow: #FFCE00;
     --panini-blue-dark: #003865;
@@ -82,7 +95,6 @@ const { configs } = Astro.props
     --text-light: #f5f5f5;
     --text-muted: #b0c4de;
 
-    /* Estilos base del footer */
     background-color: var(--panini-blue-dark);
     color: var(--text-light);
     padding: 50px 20px 20px;
@@ -112,6 +124,9 @@ const { configs } = Astro.props
   }
 
   .footer-column p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--text-muted);
     line-height: 1.6;
     font-size: 0.95rem;
@@ -127,26 +142,39 @@ const { configs } = Astro.props
     margin-bottom: 10px;
   }
 
-  .footer-column ul li a {
+  .footer-column ul li a,
+  .footer-column > a {
     color: var(--text-muted);
     text-decoration: none;
     transition: all 0.3s ease;
     font-size: 0.95rem;
+    display: inline-block;
+    margin-bottom: 10px;
   }
 
-  .footer-column ul li a:hover {
+  .footer-column ul li a:hover,
+  .footer-column > a:hover {
     color: var(--panini-orange);
     padding-left: 5px;
   }
 
-  /* REDES SOCIALES */
+  /* --- Iconos de texto (DIR, EMAIL) --- */
+  .footer-column p [data-icon] {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    flex-shrink: 0;
+    color: var(--panini-orange);
+  }
+
+  /* --- Redes Sociales --- */
   .social-links {
     display: flex;
     gap: 15px;
     margin-top: 15px;
   }
 
-  .social-links a {
+  .social-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -159,18 +187,24 @@ const { configs } = Astro.props
     transition: all 0.3s ease;
   }
 
-  /* Colores específicos al pasar el mouse */
-  .social-links a:hover {
+  .social-link [data-icon] {
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentColor;
+  }
+
+  .social-link:hover {
     transform: translateY(-3px);
     background-color: white;
   }
-  .social-links a.fa-facebook-f:hover { color: #1877F2; }
-  .social-links a.fa-instagram:hover { color: #E1306C; }
-  .social-links a.fa-youtube:hover { color: #FF0000; }
-  .social-links a.fa-x-twitter:hover { color: #000000; }
-  .social-links a.fa-tiktok:hover { color: #010101; }
 
-  /* COPYRIGHT */
+  .social-link--facebook:hover  { color: #1877F2; }
+  .social-link--instagram:hover { color: #E1306C; }
+  .social-link--youtube:hover   { color: #FF0000; }
+  .social-link--twitter:hover   { color: #000000; }
+  .social-link--tiktok:hover    { color: #010101; }
+
+  /* --- Copyright --- */
   .footer-bottom {
     max-width: 1200px;
     margin: 30px auto 0;
@@ -181,7 +215,17 @@ const { configs } = Astro.props
     color: var(--text-muted);
   }
 
-  /* RESPONSIVE */
+  .footer-link {
+    color: var(--panini-orange);
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .footer-link:hover {
+    text-decoration: underline;
+  }
+
+  /* --- Responsive --- */
   @media (max-width: 768px) {
     .footer-container {
       flex-direction: column;
@@ -190,6 +234,9 @@ const { configs } = Astro.props
     }
     .footer-column {
       min-width: 100%;
+    }
+    .footer-column p {
+      justify-content: center;
     }
     .social-links {
       justify-content: center;
