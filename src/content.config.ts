@@ -28,11 +28,11 @@ const productos = defineCollection({
     description: z.string(),
     availability: z.enum(["in_stock", "out_of_stock"]),
     link: z.string(),
-    price: z.number(),
+    precio: z.number(),
     identifier_exists: z.enum(["yes", "no"]),
     brand: z.string(),
     // PROCESAMIENTO ÚNICO: Transforma la URL de la imagen al entrar al store
-    image_link: z.preprocess((val) => resolveImageUrl(val as string | null), z.string()),
+    imageLink: z.preprocess((val) => resolveImageUrl(val as string | null), z.string()),
     // PROCESAMIENTO ÚNICO: Convierte texto separado por comas o maneja arreglos limpios
     categories: z.preprocess((val) => {
       if (!val) return ["MUNDIAL"];

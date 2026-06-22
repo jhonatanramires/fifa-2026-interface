@@ -65,9 +65,9 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
 
         <!-- Columna imagen -->
         <div class="product-detail__image-wrapper">
-          {data.image_link ? (
+          {data.imageLink ? (
             <img
-              src={data.image_link}
+              src={data.imageLink}
               alt={data.title}
               class="product-detail__image"
               loading="lazy"
@@ -92,8 +92,8 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
           )} -->
 
           <p class="product-detail__price">
-            {data.price
-              ? `$${Number(data.price).toLocaleString('es-CL')}`
+            {data.precio
+              ? `$${Number(data.precio).toLocaleString('es-CL')}`
               : 'Precio no disponible'}
           </p>
 

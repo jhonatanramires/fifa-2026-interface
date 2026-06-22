@@ -65,9 +65,9 @@ const activeCategory = "MUNDIAL"
           {productos.map((p) => (
             <ProductCard
               title={p.title}
-              price={p.price}
+              price={p.precio}
               description={p.description}
-              image_link={p.image_link}
+              image_link={p.imageLink}
               categories={p.categories ?? []}
             />
           ))}
