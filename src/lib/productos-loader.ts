@@ -12,11 +12,10 @@ export interface Producto {
   despacho?: string | null
 }
 
-// Normalize sheet headers (with accents/spaces) into clean schema keys.
 function normalizeHeader(label: string): string {
   const key = `${label}`
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // strip accents
+    .replace(/[\u0300-\u036f]/g, "") 
     .toLowerCase()
     .trim()
   if (key.includes("imagen") || key.includes("foto") || key.includes("img")) return "imagen"
@@ -28,7 +27,6 @@ function normalizeHeader(label: string): string {
   return key.replace(/\s+/g, "_")
 }
 
-// Convert a Google Drive share link into a directly embeddable image URL.
 function resolveImageUrl(url?: string | null): string {
   if (!url) return ""
   const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/) ?? url.match(/[?&]id=([^&]+)/)
@@ -36,15 +34,16 @@ function resolveImageUrl(url?: string | null): string {
   return url
 }
 
-// Convert the category into categories
-function resolveCategories(categories?: string | null): string[] {
-    if (!categories) {
-        return ["MUNDIAL"];
-    }
-    return categories.split(',').map(c => c.trim());
+// Modificado para aceptar cualquier tipo (unknown) de entrada de forma segura
+function resolveCategories(categories?: unknown): string[] {
+  if (!categories) return ["MUNDIAL"];
+  if (Array.isArray(categories)) return categories;
+  if (typeof categories === "string") {
+    return categories.split(',').map(c => c.trim()).filter(Boolean);
+  }
+  return ["MUNDIAL"];
 }
 
-// Genera el archivo XML para Google Merchant Center
 function buildMerchantFeed(products: Producto[]) {
   const siteUrl = import.meta.env.SITE || "https://tusitioweb.com"
   const currency = import.meta.env.MERCHANT_CURRENCY || "COP"
@@ -170,7 +169,7 @@ export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0])
         for (const entry of context.store.values()) {
           const data = entry.data as Record<string, unknown>
           data.imagen = resolveImageUrl(data.imagen as string | undefined)
-          data.categorias = resolveCategories(data.categorias as string | undefined)
+          data.categorias = resolveCategories(data.categorias)
           context.store.set({ id: entry.id, data })
         }
       } catch (err) {
@@ -190,7 +189,7 @@ export function productosSheetLoader(options: Parameters<typeof sheetLoader>[0])
         })
       }
 
-      // CORRECCIÓN AQUÍ: Se añade "as unknown as Producto" para evitar el error TS(2352)
+      // Mapeo seguro usando unknown para evitar errores de compilación estrictos de TypeScript
       const totalProducts = Array.from(context.store.values()).map(
         (entry) => entry.data as unknown as Producto
       )

@@ -19,7 +19,8 @@ const productos = defineCollection({
     precio: z.coerce.number().nullable().optional(),
     descripcion: z.string().nullable().optional(),
     imagen: z.string().nullable().optional(),
-    categorias: z.array(z.string()).nullable().optional(), // Ajustado a Arreglo de Strings
+    // SOLUCIÓN: Preprocesamos el valor para transformar texto separado por comas en un arreglo real
+    categorias: (z.string()).optional(),
     despacho: z.string().nullable().optional(),
   }),
 })
