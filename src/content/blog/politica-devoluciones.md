@@ -8,7 +8,7 @@ category: 'Legal'
 
 # Política de Devoluciones
 
-En **Distribuidora Panini** queremos que estés completamente satisfecho con tu compra. Si por alguna razón no es así, aquí te explicamos cómo proceder.
+En **Tu Distribuidor Panini** queremos que estés completamente satisfecho con tu compra. Si por alguna razón no es así, aquí te explicamos cómo proceder.
 
 ## ¿Cuándo puedes solicitar una devolución?
 
