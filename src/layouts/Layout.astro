@@ -9,31 +9,88 @@ import "@fontsource/inter/700.css";
 import "@fontsource/inter/800.css";
 
 interface Props {
-  title?: string,
+  title?: string
+  description?: string
+  canonical?: string
+  ogImage?: string
   configs: Config
 }
-const { title = "Panini — Tienda Oficial" , configs } = Astro.props
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const {
+  title       = "Distripanini – Distribuidora autorizada Panini en Colombia",
+  description = "Compra álbumes, sobres y coleccionables Panini en Colombia. Copa Mundial FIFA 2026, Liga BetPlay y más. Envíos a todo el país desde Medellín. Centro Comercial City Plaza, Local 202.",
+  canonical   = canonicalURL.toString(),
+  ogImage     = "https://distripanini.com/og-image.jpg",
+  configs,
+} = Astro.props
 ---
 
 <!doctype html>
 <html lang="es" class="bg-background">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ── Título y descripción ─────────────────────────────────────────── -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- ── Indexación ───────────────────────────────────────────────────── -->
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonical} />
+
+    <!-- ── Idioma / región ──────────────────────────────────────────────── -->
+    <link rel="alternate" hreflang="es-CO" href="https://distripanini.com/" />
+
+    <!-- ── Geolocalización ──────────────────────────────────────────────── -->
+    <meta name="geo.region"    content="CO-ANT" />
+    <meta name="geo.placename" content="Medellín, Antioquia, Colombia" />
+    <meta name="geo.position"  content="6.2442;-75.5812" />
+    <meta name="ICBM"          content="6.2442, -75.5812" />
+
+    <!-- ── Tema / PWA ───────────────────────────────────────────────────── -->
+    <meta name="theme-color" content="#0050b3" />
+    <link rel="icon"    href="/favicon.ico" type="image/x-icon" />
+    <link rel="sitemap" href="/sitemap-0.xml" />
+
+    <!-- ── Open Graph ───────────────────────────────────────────────────── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content={canonical} />
+    <meta property="og:locale"      content="es_CO" />
+    <meta property="og:site_name"   content="Distripanini" />
+    <meta property="og:title"       content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image"       content={ogImage} />
+    <meta property="og:image:alt"   content="Distripanini – Distribuidora autorizada Panini en Colombia" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- ── Twitter / X Card ─────────────────────────────────────────────── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image"       content={ogImage} />
+    <meta name="twitter:image:alt"   content="Distripanini – Distribuidora autorizada Panini en Colombia" />
+
+    <!-- ── Datos estructurados (Schema.org) ─────────────────────────────── -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Store",
-        "name": "Distribuidora Panini",
-        "description": "Tienda oficial Panini en Medellín, Colombia. Álbumes, sobres y coleccionables de la Copa Mundial FIFA 2026.",
+        "name": "Distripanini – Distribuidora autorizada Panini Medellín",
+        "description": "Distribuidora autorizada Panini en Medellín, Colombia. Álbumes, sobres y coleccionables de la Copa Mundial FIFA 2026, Liga BetPlay y más.",
         "url": "https://distripanini.com",
         "logo": "https://distripanini.com/favicon.ico",
         "image": "https://distripanini.com/og-image.jpg",
-        "telephone": "+57-TU-NUMERO",
+        "telephone": configs.WHATSAPP || "+57-TU-NUMERO",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "TU DIRECCIÓN",
+          "streetAddress": configs.DIR || "Tu dirección aquí",
           "addressLocality": "Medellín",
           "addressRegion": "Antioquia",
-          "postalCode": "050001",
+          "postalCode": "055421",
           "addressCountry": "CO"
         },
         "geo": {
@@ -42,14 +99,8 @@ const { title = "Panini — Tienda Oficial" , configs } = Astro.props
           "longitude": -75.5812
         },
         "areaServed": [
-          {
-            "@type": "City",
-            "name": "Medellín"
-          },
-          {
-            "@type": "Country",
-            "name": "Colombia"
-          }
+          { "@type": "City",    "name": "Medellín" },
+          { "@type": "Country", "name": "Colombia" }
         ],
         "priceRange": "$$",
         "currenciesAccepted": "COP",
@@ -64,30 +115,9 @@ const { title = "Panini — Tienda Oficial" , configs } = Astro.props
         ]
       }
     </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0050b3" />
-    <!-- Geolocalización -->
-    <meta name="geo.region" content="CO-ANT" />
-    <meta name="geo.placename" content="Medellín, Antioquia, Colombia" />
-    <meta name="geo.position" content="6.2442;-75.5812" />
-    <meta name="ICBM" content="6.2442, -75.5812" />
 
-    <!-- SEO básico corregido (tu meta "name" estaba mal) -->
-    <meta name="description" content="Distribuidora Panini en Medellín, Colombia. Álbumes, sobres y coleccionables oficiales Panini: Copa Mundial FIFA 2026, Liga BetPlay y más. Envíos a todo Colombia." />
-
-    <!-- Open Graph (para redes sociales y señales adicionales) -->
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content="Distribuidora Panini oficial en Medellín, Colombia." />
-    <meta property="og:locale" content="es_CO" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://distripanini.com" />
-
-    <!-- Idioma -->
-    <link rel="alternate" hreflang="es-CO" href="https://distripanini.com/" />
-    <link rel="sitemap" href="/sitemap-0.xml" />
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <title>{title}</title>
+    <!-- ── Slot para meta adicional por página (opcional) ───────────────── -->
+    <slot name="head" />
   </head>
   <body>
     <Header />
