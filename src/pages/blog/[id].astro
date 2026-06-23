@@ -30,8 +30,61 @@ console.log(post)
 <Layout configs={configs} title={post.data.title}>
   <main class="container">
     <article class="prose prose-invert">
-      <h1>{post.data.title}</h1>
-      <p class="text-sm text-gray-400">{new Date(post.data.pubDate).toLocaleDateString()}</p>
       <Content />
+      <div class="date-card">
+        <p class="date-line">
+          Publicado el {post.data.pubDate.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </p>
+        {post.data.updatedDate && (
+          <p class="date-line updated">
+            Actualizado el {post.data.updatedDate.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        )}
+      </div>
     </article>
   </main>
+
+<style>
+  /* Estilos para la tarjeta de metadatos al final del artículo */
+  .date-card {
+    margin-top: 3rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--panini-red);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+
+  .date-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.25rem 0;
+  }
+
+  .date-line + .date-line {
+    border-top: 1px dashed var(--border);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
+  .date-line.updated {
+    color: var(--panini-blue-dark);
+    font-style: italic;
+  }
+
+  /* Pequeño ícono con emoji (opcional, puedes usar un pseudo-elemento o SVG) */
+  .date-line::before {
+    content: "📅";
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  .date-line.updated::before {
+    content: "🔄";
+  }
+</style>

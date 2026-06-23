@@ -300,3 +300,159 @@ img {
   margin: 0;
   margin-top: auto;
 }
+/* ========== TIPOGRAFÍA Y ELEMENTOS DEL BLOG ========== */
+/* Aplica la clase .prose al contenedor del contenido markdown renderizado */
+.prose {
+  max-width: 75ch; /* línea cómoda de lectura */
+  margin: 0 auto;
+  color: var(--text);
+  line-height: 1.75;
+  font-size: 1.05rem;
+}
+
+/* Encabezados */
+.prose h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--panini-blue-dark); /* Azul corporativo */
+  margin: 2rem 0 1rem;
+}
+.prose h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--panini-red); /* Rojo de la marca */
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.25rem;
+  margin: 2rem 0 0.75rem;
+}
+.prose h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 1.5rem 0 0.5rem;
+}
+.prose h4, .prose h5, .prose h6 {
+  font-weight: 600;
+  color: var(--text);
+  margin: 1.25rem 0 0.5rem;
+}
+.prose h4 { font-size: 1.15rem; }
+.prose h5 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.prose h6 { font-size: 0.95rem; color: var(--text-muted); }
+
+/* Párrafos */
+.prose p {
+  margin: 0 0 1.25rem;
+}
+
+/* Enlaces */
+.prose a {
+  color: var(--panini-red);
+  text-decoration: underline;
+  text-decoration-color: var(--panini-red);
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+.prose a:hover {
+  color: var(--panini-blue-dark);
+  text-decoration-color: var(--panini-blue-dark);
+}
+
+/* Listas */
+.prose ul, .prose ol {
+  padding-left: 1.5rem;
+  margin: 0 0 1.25rem;
+}
+.prose li {
+  margin-bottom: 0.4rem;
+}
+.prose ul > li::marker {
+  color: var(--panini-red);
+}
+
+/* Citas */
+.prose blockquote {
+  border-left: 4px solid var(--panini-red);
+  margin: 1.5rem 0;
+  padding: 0.5rem 1rem;
+  background: #fef3f0; /* fondo sutil rojizo */
+  border-radius: 0 8px 8px 0;
+  color: #4a3b36;
+  font-style: italic;
+}
+.prose blockquote p {
+  margin: 0;
+}
+
+/* Código inline */
+.prose code {
+  background: #f3f4f6;
+  color: var(--panini-blue-dark);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* Bloques de código */
+.prose pre {
+  background: #1e1e2f;
+  color: #e0e0e0;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.prose pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Imágenes */
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 1.5rem auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Separadores (hr) */
+.prose hr {
+  border: 0;
+  height: 1px;
+  background: var(--border);
+  margin: 2rem 0;
+}
+
+/* Tablas */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+.prose th, .prose td {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+}
+.prose th {
+  background: var(--panini-blue-dark);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Pie de foto opcional (figcaption) */
+.prose figcaption {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+}
