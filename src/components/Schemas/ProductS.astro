@@ -1,0 +1,58 @@
+---
+import type { Producto } from '../../lib/productos-loader'
+import { slugify } from '../../lib/utils'
+
+// Props del producto (solo los campos que realmente tienes)
+const { title, price, description, image_link, availability } = Astro.props
+
+// --- Variables para datos fijos o configurables (cámbialos según tu entorno) ---
+const BRAND = "Panini"
+const SELLER_NAME = "Distripanini"
+const SELLER_LOCALITY = "Medellín"
+const SELLER_REGION = "Antioquia"
+const SELLER_COUNTRY = "CO"
+const CURRENCY = "COP"
+const CONDITION = "https://schema.org/NewCondition"
+const IN_STOCK = "https://schema.org/InStock"
+const OUT_OF_STOCK = "https://schema.org/OutOfStock"
+
+// URL del producto (derivada del título)
+const productUrl = `https://distripanini.com/productos/${slugify(title)}`
+
+// --- Construcción del objeto structuredData (solo lo que se usa) ---
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": title,
+  "description": description,
+  "image": image_link, // nombre correcto según schema.org
+  "brand": {
+    "@type": "Brand",
+    "name": BRAND,
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": productUrl,
+    "priceCurrency": CURRENCY,
+    "price": price,
+    "availability": availability === 'In Stock' ? IN_STOCK : OUT_OF_STOCK,
+    "itemCondition": CONDITION,
+    "seller": {
+      "@type": "Organization",
+      "name": SELLER_NAME,
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": SELLER_LOCALITY,
+        "addressRegion": SELLER_REGION,
+        "addressCountry": SELLER_COUNTRY,
+      },
+    },
+    // No se incluyen shippingDetails ni otros campos sin datos reales
+  },
+};
+
+// (Opcional) Log para depuración
+// console.log(JSON.stringify(structuredData, null, 2));
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />

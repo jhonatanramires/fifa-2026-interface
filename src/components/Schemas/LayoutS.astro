@@ -1,0 +1,87 @@
+---
+import type { Config } from "../../lib/config-loader";
+
+interface Props {
+  configs: Config;
+  canonical: string;
+}
+
+const { configs, canonical } = Astro.props;
+
+// --- Variables para datos fijos o configurables ---
+const SITE_NAME = "Distripanini";
+const SITE_DESCRIPTION =
+  "Distribuidora autorizada Panini en Medellín, Colombia. Álbumes, sobres y coleccionables de la Copa Mundial FIFA 2026, Liga BetPlay y más.";
+const SITE_URL = canonical; // Corregido: uso directo de la variable
+const SITE_LOGO = "https://distripanini.com/favicon.ico";
+const SITE_IMAGE = "https://distripanini.com/og-image.jpg";
+const SITE_PHONE = configs.WHATSAPP || "+57-TU-NUMERO";
+const SITE_EMAIL = configs.EMAIL || "info@distripanini.com"; // Si tienes email
+
+// Dirección
+const STREET_ADDRESS = configs.DIR || "Tu dirección aquí";
+const LOCALITY = "Medellín";
+const REGION = "Antioquia";
+const POSTAL_CODE = "055421";
+const COUNTRY = "CO";
+
+// Coordenadas geográficas (Medellín)
+const LATITUDE = 6.2442;
+const LONGITUDE = -75.5812;
+
+// Horarios de apertura
+const OPENING_HOURS = [
+  {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "opens": "08:00",
+    "closes": "18:00",
+  },
+  // Puedes añadir sábados si abres
+  // {
+  //   "@type": "OpeningHoursSpecification",
+  //   "dayOfWeek": ["Saturday"],
+  //   "opens": "09:00",
+  //   "closes": "13:00",
+  // },
+];
+
+// --- Construcción del objeto JSON-LD ---
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Store", // o "LocalBusiness"
+  "name": SITE_NAME,
+  "description": SITE_DESCRIPTION,
+  "url": SITE_URL, // <-- Corregido
+  "logo": SITE_LOGO,
+  "image": SITE_IMAGE,
+  "telephone": SITE_PHONE,
+  "email": SITE_EMAIL, // Opcional
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": STREET_ADDRESS,
+    "addressLocality": LOCALITY,
+    "addressRegion": REGION,
+    "postalCode": POSTAL_CODE,
+    "addressCountry": COUNTRY,
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": LATITUDE,
+    "longitude": LONGITUDE,
+  },
+  "areaServed": [
+    { "@type": "City", "name": LOCALITY },
+    { "@type": "Country", "name": "Colombia" },
+  ],
+  "priceRange": "$$",
+  "currenciesAccepted": "COP",
+  "paymentAccepted": "Efectivo, Tarjeta de crédito, Transferencia",
+  "openingHoursSpecification": OPENING_HOURS,
+};
+
+// (Opcional) Log para depuración
+// console.log(JSON.stringify(jsonLd, null, 2));
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
