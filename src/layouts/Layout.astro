@@ -25,6 +25,47 @@ const {
   ogImage     = "https://distripanini.com/og-image.jpg",
   configs,
 } = Astro.props
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "Distripanini – Distribuidora autorizada Panini Medellín",
+  "description": "Distribuidora autorizada Panini en Medellín, Colombia. Álbumes, sobres y coleccionables de la Copa Mundial FIFA 2026, Liga BetPlay y más.",
+  "url": "https://distripanini.com",
+  "logo": "https://distripanini.com/favicon.ico",
+  "image": "https://distripanini.com/og-image.jpg",
+  "telephone": configs.WHATSAPP || "+57-TU-NUMERO", // <-- Se usa directamente
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": configs.DIR || "Tu dirección aquí", // <-- Se usa directamente
+    "addressLocality": "Medellín",
+    "addressRegion": "Antioquia",
+    "postalCode": "055421",
+    "addressCountry": "CO"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 6.2442,
+    "longitude": -75.5812
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Medellín" },
+    { "@type": "Country", "name": "Colombia" }
+  ],
+  "priceRange": "$$",
+  "currenciesAccepted": "COP",
+  "paymentAccepted": "Efectivo, Tarjeta de crédito, Transferencia",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "18:00"
+    }
+  ]
+};
+
+
 ---
 
 <!doctype html>
@@ -32,6 +73,9 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ── Variables que necesito en el script ─────────────────────────────────────────── -->
+    <div id="app-data" data-whatsapp={configs.WHATSAPP} data-dir={configs.DIR} style="display: none;"></div>
 
     <!-- ── Título y descripción ─────────────────────────────────────────── -->
     <title>{title}</title>
@@ -75,46 +119,7 @@ const {
     <meta name="twitter:image:alt"   content="Distripanini – Distribuidora autorizada Panini en Colombia" />
 
     <!-- ── Datos estructurados (Schema.org) ─────────────────────────────── -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Store",
-        "name": "Distripanini – Distribuidora autorizada Panini Medellín",
-        "description": "Distribuidora autorizada Panini en Medellín, Colombia. Álbumes, sobres y coleccionables de la Copa Mundial FIFA 2026, Liga BetPlay y más.",
-        "url": "https://distripanini.com",
-        "logo": "https://distripanini.com/favicon.ico",
-        "image": "https://distripanini.com/og-image.jpg",
-        "telephone": configs.WHATSAPP || "+57-TU-NUMERO",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": configs.DIR || "Tu dirección aquí",
-          "addressLocality": "Medellín",
-          "addressRegion": "Antioquia",
-          "postalCode": "055421",
-          "addressCountry": "CO"
-        },
-        "geo": {
-          "@type": "GeoCoordinates",
-          "latitude": 6.2442,
-          "longitude": -75.5812
-        },
-        "areaServed": [
-          { "@type": "City",    "name": "Medellín" },
-          { "@type": "Country", "name": "Colombia" }
-        ],
-        "priceRange": "$$",
-        "currenciesAccepted": "COP",
-        "paymentAccepted": "Efectivo, Tarjeta de crédito, Transferencia",
-        "openingHoursSpecification": [
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
-            "opens": "08:00",
-            "closes": "18:00"
-          }
-        ]
-      }
-    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
 
     <!-- ── Slot para meta adicional por página (opcional) ───────────────── -->
     <slot name="head" />
