@@ -3,6 +3,7 @@ import "../styles/global.css"
 import Header from "../components/Header.astro"
 import Footer from "../components/Footer.astro"
 import LayoutS from "../components/Schemas/LayoutS.astro"
+import MerchantRate from "../components/MerchantRate.astro"
 import type { Config } from "../lib/config-loader"
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/600.css";
@@ -85,6 +86,7 @@ const {
   <body>
     <Header />
     <slot />
+    <MerchantRate />
     <Footer configs={configs} />
   </body>
 </html>
