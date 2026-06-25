@@ -5,6 +5,7 @@ import Footer from "../components/Footer.astro"
 import LayoutS from "../components/Schemas/LayoutS.astro"
 import MerchantRate from "../components/MerchantRate.astro"
 import type { Config } from "../lib/config-loader"
+import GoTag from "../components/GoTag.astro"
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
@@ -84,6 +85,7 @@ const {
     <slot name="head" />
   </head>
   <body>
+    <GoTag />
     <Header />
     <slot />
     <MerchantRate />
