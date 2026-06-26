@@ -41,7 +41,9 @@ const productos = defineCollection({
       }
       if (Array.isArray(val)) return val;
       return ["MUNDIAL"];
-    }, z.array(z.string()))
+    }, z.array(z.string())),
+    pickup_SLA: z.string().optional().nullable(),
+    pickup_method: z.string().optional().nullable(),
   }),
 })
 

@@ -14,6 +14,8 @@ export interface Producto {
   identifier_exists: ["yes", "no"]
   brand: string
   categories: string[]
+  pickup_SLA: string
+  pickup_method: string
 }
 
 // Función auxiliar para escapar caracteres reservados en URLs dentro de XML

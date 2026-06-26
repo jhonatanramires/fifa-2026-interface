@@ -43,6 +43,41 @@ try {
 }
 
 const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.title}`);
+
+// ─── Lógica de disponibilidad en tienda ──────────────────────────────────────
+// Google exige que lo que se muestre aquí coincida con el feed de Merchant Center.
+// Ref: https://support.google.com/merchants/answer/14615867#Landing_page_requirements
+
+const inStock = data.availability === "in_stock"
+
+// Mapa pickup_SLA → texto visible para el usuario
+// Ref: https://support.google.com/merchants/answer/14634281#Website_requirements
+// "It must be clear when the item will be available for pick up."
+const pickupLabels: Record<string, string> = {
+  same_day:   "Disponible para recoger hoy",
+  next_day:   "Disponible para recoger mañana",
+  "2-day":    "Disponible para recoger en 2 días",
+  "3-day":    "Disponible para recoger en 3 días",
+  "4-day":    "Disponible para recoger en 4 días",
+  "5-day":    "Disponible para recoger en 5 días",
+  "6-day":    "Disponible para recoger en 6 días",
+  "7-day":    "Disponible para recoger en 7 días",
+  multi_week: "Disponible para recoger en más de una semana",
+}
+const pickupText = data.pickup_SLA ? (pickupLabels[data.pickup_SLA] ?? null) : null
+
+// Datos de la tienda física
+// Google exige que nombre + dirección completa sean visibles sin interacción.
+// Ref: https://support.google.com/merchants/answer/14615867
+// "The full address should appear when a customer clicks to view store details."
+// → Con tienda única lo mostramos directamente, sin clic extra.
+const STORE = {
+  name:    "Distripanini",
+  street:  "Calle 50 # 40-10",      // ← ajusta
+  city:    "Medellín",
+  region:  "Antioquia",
+  mapsUrl: "https://maps.app.goo.gl/71vzPtdeRske83Rs8", // ← ajusta con tu CID real
+}
 ---
 
 <Layout configs={configs} title={data.title}>
@@ -53,6 +88,9 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
       image_link={data.imageLink}
       price={data.precio}
       url={`https://distripanini.com/productos/${slugify(data.title)}`}
+      availability={data.availability}
+      pickup_sla={data.pickup_SLA}
+      configs={configs}
     />
     <div class="product-detail__container">
 
@@ -84,13 +122,6 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
         <div class="product-detail__info">
           <h1 class="product-detail__title">{data.title}</h1>
 
-          <!-- {data.shipping && (
-            <span class="product-detail__badge">
-              <Icon name="fa6-solid:truck" aria-hidden="true" />
-              Despacho
-            </span>
-          )} -->
-
           <p class="product-detail__price">
             {data.precio
               ? `$${Number(data.precio).toLocaleString('es-CL')}`
@@ -112,6 +143,67 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
             </div>
           )}
 
+          <!--
+            ═══════════════════════════════════════════════════════════════════
+            SECCIÓN DE DISPONIBILIDAD EN TIENDA
+            Requerida por Google para aprobar "Product pages with in-store
+            availability". El Storebot verifica que esto sea visible en
+            desktop y mobile sin ninguna interacción adicional.
+            Ref: https://support.google.com/merchants/answer/14615867
+            ═══════════════════════════════════════════════════════════════════
+          -->
+          <div class="store-availability" aria-label="Disponibilidad en tienda física">
+
+            {/* 1. Estado de disponibilidad — OBLIGATORIO
+                Google: "Display your in-store availability"
+                Debe coincidir con el campo availability del feed. */}
+            <div class={`store-availability__status ${inStock ? 'store-availability__status--in' : 'store-availability__status--out'}`}>
+              {inStock ? (
+                <>
+                  <Icon name="fa6-solid:circle-check" aria-hidden="true" />
+                  <span>Disponible en tienda</span>
+                </>
+              ) : (
+                <>
+                  <Icon name="fa6-solid:circle-xmark" aria-hidden="true" />
+                  <span>No disponible en tienda</span>
+                </>
+              )}
+            </div>
+
+            {/* 2. Nombre y dirección de la tienda — OBLIGATORIO
+                Google: "The store name or city name can represent a location,
+                but the full address should appear."
+                Con tienda única la mostramos siempre, sin clic extra. */}
+            
+            <a  href={STORE.mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="store-availability__location"
+              aria-label={`Ver ${STORE.name} en Google Maps`}
+            >
+              <Icon name="fa6-solid:location-dot" aria-hidden="true" class="store-availability__location-icon" />
+              <span class="store-availability__location-text">
+                <strong>{STORE.name}</strong>
+                <address>{STORE.street}, {STORE.city}, {STORE.region}</address>
+              </span>
+              <Icon name="fa6-solid:arrow-up-right-from-square" aria-hidden="true" class="store-availability__external-icon" />
+            </a>
+
+            {/* 3. SLA de pickup — OBLIGATORIO si tienes pickup_SLA en el feed
+                Google: "It must be clear when the item will be available for
+                pick up." y "Must be the same day or next day" para pickup today.
+                Ref: https://support.google.com/merchants/answer/14634281 */}
+            {inStock && pickupText && (
+              <div class="store-availability__pickup">
+                <Icon name="fa6-solid:bag-shopping" aria-hidden="true" />
+                <span>{pickupText}</span>
+              </div>
+            )}
+
+          </div>
+          <!-- FIN sección disponibilidad en tienda -->
+
           <a href={href} target="_blank" rel="noopener noreferrer" class="product-detail__buy-btn">
             <Icon name="fa6-brands:whatsapp" aria-hidden="true" />
             Comprar por WhatsApp
@@ -124,7 +216,6 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
 </Layout>
 
 <style>
-  /* --- Iconos: astro-icon renderiza el svg directamente, se estila con [data-icon] scoped --- */
   [data-icon] {
     width: 1em;
     height: 1em;
@@ -146,7 +237,6 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     width: 100%;
   }
 
-  /* --- Volver --- */
   .product-detail__back {
     display: inline-flex;
     align-items: center;
@@ -158,12 +248,8 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     transition: color 0.2s;
     text-decoration: none;
   }
+  .product-detail__back:hover { color: var(--panini-blue); }
 
-  .product-detail__back:hover {
-    color: var(--panini-blue);
-  }
-
-  /* --- Grid principal --- */
   .product-detail__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -176,7 +262,6 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     width: 100%;
     overflow: hidden;
   }
-
   @media (max-width: 768px) {
     .product-detail__grid {
       grid-template-columns: 1fr;
@@ -185,7 +270,6 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     }
   }
 
-  /* --- Imagen --- */
   .product-detail__image-wrapper {
     background: #fff;
     border-radius: 8px;
@@ -199,14 +283,12 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     width: 100%;
     box-sizing: border-box;
   }
-
   .product-detail__image {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
   }
-
   .product-detail__no-image {
     display: flex;
     flex-direction: column;
@@ -216,13 +298,8 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     font-size: 3rem;
     opacity: 0.4;
   }
+  .product-detail__no-image span { font-size: 1rem; opacity: 1; }
 
-  .product-detail__no-image span {
-    font-size: 1rem;
-    opacity: 1;
-  }
-
-  /* --- Info --- */
   .product-detail__info {
     display: flex;
     flex-direction: column;
@@ -241,24 +318,6 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     overflow-wrap: break-word;
   }
 
-  /* --- Badge --- */
-  .product-detail__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: var(--panini-red);
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.75rem;
-    padding: 0.35rem 0.85rem;
-    border-radius: 20px;
-    align-self: flex-start;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-
-  /* --- Precio --- */
   .product-detail__price {
     font-size: clamp(1.6rem, 4vw, 2.4rem);
     font-weight: 700;
@@ -267,19 +326,16 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     word-break: break-word;
   }
 
-  /* --- Descripción --- */
   .product-detail__description {
     border-top: 1px solid var(--border);
     padding-top: 1.25rem;
   }
-
   .product-detail__subheading {
     font-size: 1rem;
     font-weight: 600;
     margin: 0 0 0.5rem;
     color: var(--text);
   }
-
   .product-detail__description p {
     margin: 0;
     line-height: 1.7;
@@ -288,7 +344,6 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     overflow-wrap: break-word;
   }
 
-  /* --- Meta / Categorías --- */
   .product-detail__meta {
     display: flex;
     align-items: center;
@@ -297,23 +352,98 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     flex-wrap: wrap;
     color: var(--text-muted);
   }
+  .product-detail__meta-icon { color: var(--panini-blue); }
+  .product-detail__meta-label { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .product-detail__meta-value { color: var(--text-muted); word-break: break-word; }
 
-  .product-detail__meta-icon {
-    color: var(--panini-blue);
+  /* ─── Sección disponibilidad en tienda ────────────────────────────────────── */
+  .store-availability {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.9rem;
   }
 
-  .product-detail__meta-label {
+  /* Estado disponible / no disponible */
+  .store-availability__status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .store-availability__status--in {
+    background: #f0fdf4;
+    color: #16a34a;
+    border-bottom: 1px solid #bbf7d0;
+  }
+  .store-availability__status--out {
+    background: #fef2f2;
+    color: #dc2626;
+    border-bottom: 1px solid #fecaca;
+  }
+
+  /* Fila de ubicación — enlace a Google Maps */
+  .store-availability__location {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: var(--text);
+    background: var(--card);
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+  }
+  .store-availability__location:hover {
+    background: var(--bg);
+  }
+  .store-availability__location-icon {
+    color: var(--panini-blue);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .store-availability__location-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
+  }
+  .store-availability__location-text strong {
     font-weight: 600;
     color: var(--text);
-    white-space: nowrap;
+    font-size: 0.9rem;
   }
-
-  .product-detail__meta-value {
+  /* <address> resetea el estilo italic del navegador */
+  .store-availability__location-text address {
+    font-style: normal;
     color: var(--text-muted);
-    word-break: break-word;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .store-availability__external-icon {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    flex-shrink: 0;
   }
 
-  /* --- Botón comprar --- */
+  /* SLA de pickup */
+  .store-availability__pickup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 500;
+    font-size: 0.85rem;
+  }
+  /* ─────────────────────────────────────────────────────────────────────────── */
+
   .product-detail__buy-btn {
     display: inline-flex;
     align-items: center;
@@ -333,18 +463,7 @@ const href = generarLinkWhatsApp(configs.WHATSAPP, `${configs.MENSAJE} ${data.ti
     margin-top: auto;
     white-space: nowrap;
   }
-
-  .product-detail__buy-btn [data-icon] {
-    font-size: 1.2rem;
-    width: 1.2em;
-    height: 1.2em;
-  }
-
-  .product-detail__buy-btn:hover {
-    background: var(--panini-blue-dark);
-  }
-
-  .product-detail__buy-btn:active {
-    transform: scale(0.97);
-  }
+  .product-detail__buy-btn [data-icon] { font-size: 1.2rem; width: 1.2em; height: 1.2em; }
+  .product-detail__buy-btn:hover { background: var(--panini-blue-dark); }
+  .product-detail__buy-btn:active { transform: scale(0.97); }
 </style>

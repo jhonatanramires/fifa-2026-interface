@@ -1,58 +1,148 @@
 ---
-import type { Producto } from '../../lib/productos-loader'
-import { slugify } from '../../lib/utils'
+import type { Config } from '../../lib/config-loader'
 
-// Props del producto (solo los campos que realmente tienes)
-const { title, price, description, image_link, availability } = Astro.props
+interface Props {
+  title:          string
+  description:    string
+  image_link:     string
+  price:          number | string
+  url:            string
+  availability:   string        // "in_stock" | "out_of_stock"
+  pickup_sla?:    string | null // "same_day" | "next_day" | "2-day" … 
+  pickup_method?: string | null // "buy" | "reserve" | "ship to store" | "not supported"
+  configs:        Config
+}
 
-// --- Variables para datos fijos o configurables (cámbialos según tu entorno) ---
-const BRAND = "Panini"
-const SELLER_NAME = "Distripanini"
-const SELLER_LOCALITY = "Medellín"
-const SELLER_REGION = "Antioquia"
-const SELLER_COUNTRY = "CO"
-const CURRENCY = "COP"
-const CONDITION = "https://schema.org/NewCondition"
-const IN_STOCK = "https://schema.org/InStock"
+const {
+  title,
+  description,
+  image_link,
+  price,
+  url,
+  availability,
+  pickup_sla,
+  pickup_method,
+  configs,
+} = Astro.props
+
+const BRAND        = "Panini"
+const SELLER_NAME  = "Distripanini"
+const STORE_NAME   = "Distripanini"
+const STORE_ID     = "2041443163540285507"
+const STREET       = configs?.DIR
+const LOCALITY     = "Medellín"
+const REGION       = "Antioquia"
+const POSTAL       = "055420"
+const COUNTRY_CODE = "CO"
+const CURRENCY     = "COP"
+const CONDITION    = "https://schema.org/NewCondition"
+const IN_STOCK     = "https://schema.org/InStock"
 const OUT_OF_STOCK = "https://schema.org/OutOfStock"
 
-// URL del producto (derivada del título)
-const productUrl = `https://distripanini.com/productos/${slugify(title)}`
+const availabilityUrl = availability === "in_stock" ? IN_STOCK : OUT_OF_STOCK
 
-// --- Construcción del objeto structuredData (solo lo que se usa) ---
+const storeAddress = {
+  "@type":         "PostalAddress",
+  streetAddress:   STREET,
+  addressLocality: LOCALITY,
+  addressRegion:   REGION,
+  postalCode:      POSTAL,
+  addressCountry:  COUNTRY_CODE,
+}
+
+const slaDaysMax: Record<string, number> = {
+  same_day:   0,
+  next_day:   1,
+  "2-day":    2,
+  "3-day":    3,
+  "4-day":    4,
+  "5-day":    5,
+  "6-day":    6,
+  "7-day":    7,
+  multi_week: 21,
+}
+const slaMin = pickup_sla === "same_day" ? 0 : 1
+const slaMax = pickup_sla ? (slaDaysMax[pickup_sla] ?? 7) : undefined
+
+// pickup_method válidos según Merchant Center
+// Ref: https://support.google.com/merchants/answer/14779112#Store_pickup
+// Desde sept. 2024 es opcional — se incluye solo si viene del feed
+const validPickupMethods = ["buy", "reserve", "ship_to_store", "not_supported"]
+const resolvedPickupMethod = (pickup_method && validPickupMethods.includes(pickup_method))
+  ? pickup_method
+  : null
+
+const shippingDetails = (pickup_sla && slaMax !== undefined)
+  ? {
+      "@type": "OfferShippingDetails",
+      shippingRate: {
+        "@type":   "MonetaryAmount",
+        value:     "0",
+        currency:  CURRENCY,
+      },
+      shippingDestination: {
+        "@type":        "DefinedRegion",
+        addressCountry: COUNTRY_CODE,
+      },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: {
+          "@type":   "QuantitativeValue",
+          minValue:  slaMin,
+          maxValue:  slaMax,
+          unitCode:  "DAY",
+        },
+        transitTime: {
+          "@type":   "QuantitativeValue",
+          minValue:  slaMin,
+          maxValue:  slaMax,
+          unitCode:  "DAY",
+        },
+      },
+      // pickup_method — opcional desde sept. 2024, se añade solo si existe
+      ...(resolvedPickupMethod
+        ? {
+            additionalProperty: {
+              "@type": "PropertyValue",
+              name:    "pickup_method",
+              value:   resolvedPickupMethod,
+            },
+          }
+        : {}),
+    }
+  : undefined
+
 const structuredData = {
   "@context": "https://schema.org",
-  "@type": "Product",
-  "name": title,
-  "description": description,
-  "image": image_link, // nombre correcto según schema.org
-  "brand": {
+  "@type":    "Product",
+  name:        title,
+  description: description,
+  image:       image_link,
+  brand: {
     "@type": "Brand",
-    "name": BRAND,
+    name:    BRAND,
   },
-  "offers": {
-    "@type": "Offer",
-    "url": productUrl,
-    "priceCurrency": CURRENCY,
-    "price": price,
-    "availability": availability === 'In Stock' ? IN_STOCK : OUT_OF_STOCK,
-    "itemCondition": CONDITION,
-    "seller": {
-      "@type": "Organization",
-      "name": SELLER_NAME,
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": SELLER_LOCALITY,
-        "addressRegion": SELLER_REGION,
-        "addressCountry": SELLER_COUNTRY,
-      },
+  offers: {
+    "@type":         "Offer",
+    url:             url,
+    priceCurrency:   CURRENCY,
+    price:           price,
+    availability:    availabilityUrl,
+    itemCondition:   CONDITION,
+    availableAtOrFrom: {
+      "@type":    "Store",
+      name:       STORE_NAME,
+      identifier: STORE_ID,
+      address:    storeAddress,
     },
-    // No se incluyen shippingDetails ni otros campos sin datos reales
+    seller: {
+      "@type":  "Organization",
+      name:     SELLER_NAME,
+      address:  storeAddress,
+    },
+    ...(shippingDetails ? { shippingDetails } : {}),
   },
-};
-
-// (Opcional) Log para depuración
-// console.log(JSON.stringify(structuredData, null, 2));
+}
 ---
 
 <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
